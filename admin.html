@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Dasbor Admin Premium V4 - Blok Konten Dinamis (Teks & Ilustrasi)</title>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --panel-bg: #ffffff;
+            --accent-color: #2563eb;
+            --danger-color: #dc2626;
+            --success-color: #10b981;
+            --border-color: #d1d5db;
+            --reader-bg: #f7f4eb;
+            --reader-text: #2b2b2b;
+            --reader-accent: #8c6239;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: var(--panel-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .login-container h2 { margin-bottom: 20px; color: var(--accent-color); }
+
+        .dashboard-container {
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .logout-btn { background-color: #4b5563; color: white; width: auto; padding: 8px 16px; }
+
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.9; }
+        .hidden { display: none !important; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        .form-section, .list-section, .preview-section {
+            background: var(--panel-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+            color: #374151;
+        }
+
+        .novel-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .novel-item:hover { background: #f3f4f6; }
+        .novel-item.active { border-color: var(--accent-color); background: #eff6ff; }
+
+        .novel-info h4 { font-size: 1.05rem; color: #111827; }
+        .novel-info p { font-size: 0.85rem; color: #6b7280; }
+
+        .action-btns { display: flex; gap: 8px; }
+        .delete-btn { background-color: var(--danger-color); width: auto; padding: 6px 12px; margin: 0; }
+        .edit-btn { background-color: var(--success-color); width: auto; padding: 6px 12px; margin: 0; }
+        .neutral-btn { background-color: #6b7280; color: white; width: auto; padding: 6px 12px; margin: 0; }
+
+        /* BLOCK STYLING */
+        .chapter-block-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .content-block-item {
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* READER PREVIEW SIMULATION STYLING */
+        .reader-simulation-box {
+            background-color: var(--reader-bg);
+            color: var(--reader-text);
+            border: 2px dashed #c2bba8;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            max-height: 750px;
+            overflow-y: auto;
+        }
+        .sim-catalog-card {
+            display: flex;
+            background: #fff;
+            border: 1px solid #e0dacb;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .sim-card-cover { width: 80px; height: 110px; background: #e5e5e5; object-fit: cover; }
+        .sim-card-details { padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .sim-novel-content p { margin-bottom: 15px; text-indent: 2em; text-align: justify; font-size: 16px; }
+        .sim-illustration-img { max-width: 100%; height: auto; border-radius: 6px; margin: 15px auto; display: block; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* Comment box admin reply */
+        .comment-box {
+            background: #fff;
+            border: 1px solid #e0dacb;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 15px;
+            font-family: sans-serif;
+            font-size: 0.9rem;
+        }
+        .reply-item {
+            margin-left: 20px;
+            margin-top: 5px;
+            background: #f3f4f6;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent-color);
+        }
+        .reply-input-group { display: flex; gap: 5px; margin-top: 8px; }
+        .reply-input-group input { margin: 0; padding: 6px; font-size: 0.85rem; }
+        .reply-input-group button { margin: 0; width: auto; padding: 6px 12px; font-size: 0.85rem; background: #4f46e5; }
+        
+        .block-type-selector {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .block-type-selector button {
+            margin: 0;
+            font-size: 0.85rem;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN AREA -->
+    <div id="loginArea" class="login-container">
+        <h2>Panel Kontrol Admin</h2>
+        <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 15px;">Gunakan kata sandi bawaan: <b>admin123</b></p>
+        <input type="password" id="adminPassword" placeholder="Masukkan Password Admin...">
+        <button onclick="checkPassword()">Masuk ke Dasbor</button>
+        <p id="loginError" style="color: var(--danger-color); font-size: 0.9rem; margin-top: 10px;" class="hidden">Password salah! Silakan coba lagi.</p>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboardArea" class="dashboard-container hidden">
+        <header>
+            <div>
+                <h2>Dasbor Kontrol Novel Terintegrasi - V4</h2>
+                <p style="font-size:0.9rem; color:#6b7280;">Kelola multi-bab dengan blok Teks &amp; Ilustrasi Gambar secara terurut.</p>
+            </div>
+            <button onclick="logoutAdmin()" class="logout-btn">Keluar</button>
+        </header>
+
+        <div class="main-layout">
+            <!-- LEFT COLUMN: MANAGEMENT -->
+            <div>
+                <!-- LIST NOVEL UTAMA -->
+                <div class="list-section">
+                    <h3>Daftar Novel Aktif</h3>
+                    <div id="novelListContainer"></div>
+                </div>
+
+                <!-- MENU EDIT TOTAL BAB (Lengkap dengan Edit Konten Per-Bab, Hapus Per-Bab, & Tambah Bab di bawah) -->
+                <div id="editChaptersSection" class="form-section hidden">
+                    <h3 id="editNovelTitleHeader">Manajemen Seluruh Bab Novel</h3>
+                    
+                    <div style="background: #f9fafb; padding: 15px; border-radius:6px; margin-bottom:15px; border:1px solid var(--border-color);">
+                        <h4 style="font-size:0.95rem; margin-bottom:10px; color:#374151;">Daftar Pilihan Seluruh BAB:</h4>
+                        <div id="currentChaptersList" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    </div>
+
+                    <!-- FORM EDIT KONTEN BAB YANG SEDANG DIPILIH (Blok Dinamis Terurut) -->
+                    <div id="specificChapterEditForm" class="hidden" style="background:#fffbeb; border:1px solid #fcd34d; padding:15px; border-radius:6px; margin-bottom:15px;">
+                        <h4 id="specificEditHeader" style="font-size:0.95rem; color:#b45309; margin-bottom:10px;">Edit Konten Bab</h4>
+                        <input type="hidden" id="editTargetChapIndex">
+                        <label><b>Judul Bab:</b></label>
+                        <input type="text" id="editTargetChapTitle" required>
+                        
+                        <label><b>Struktur Konten Bab (Urutan Sesuai Pembuatan):</b></label>
+                        <div id="editBlocksContainer" style="margin-bottom:15px;"></div>
+                        
+                        <!-- Pilihan Menambahkan Blok Baru Saat Edit Bab -->
+                        <div class="block-type-selector">
+                            <button type="button" onclick="addBlockToEditForm('text')" style="background:#4b5563;">➕ Tambah Blok Paragraf Teks</button>
+                            <button type="button" onclick="addBlockToEditForm('image')" style="background:#8c6239;">🖼️ Tambah Blok Ilustrasi Gambar</button>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button onclick="saveChapterChanges()" style="background:var(--success-color);">Save & Publish Perubahan</button>
+                            <button onclick="cancelChapterChanges()" style="background:#6b7280;">Cancel / Batal</button>
+                        </div>
+                    </div>
+
+                    <!-- FUNGSI DI BAGIAN BAWAH BAB TERAKHIR UNTUK MEMPERMUDAH TAMBAH BAB BARU -->
+                    <div style="border-top:2px dashed var(--border-color); padding-top:15px; margin-top:15px;">
+                        <form id="addChapterForm" onsubmit="addNewChapter(event)">
+                            <h4 style="font-size:0.95rem; margin-bottom:5px; color:var(--accent-color);">✨ Cepat Tambah Bab Baru (Di Akhir Novel)</h4>
+                            <input type="text" id="newChapTitle" placeholder="Contoh: Bab 2: Pertemuan Misterius" required>
+                            
+                            <div id="newChapBlocksContainer"></div>
+                            
+                            <div class="block-type-selector">
+                                <button type="button" onclick="addBlockToNewChapterForm('text')" style="background:#4b5563;">➕ Tambah Blok Teks</button>
+                                <button type="button" onclick="addBlockToNewChapterForm('image')" style="background:#8c6239;">🖼️ Tambah Blok Ilustrasi</button>
+                            </div>
+                            
+                            <button type="submit" style="background:var(--accent-color); margin-top:10px;">Tambahkan Bab Ini</button>
+                        </form>
+                    </div>
+
+                    <button onclick="closeEditMenu()" style="background:#4b5563; margin-top: 15px; width:100%;">Selesai & Tutup Form Manajemen Novel</button>
+                </div>
+
+                <!-- FORM BUAT NOVEL BARU (Mendukung Tambah Banyak Bab Sebelum Terbit) -->
+                <div class="form-section">
+                    <h3>Buat & Terbitkan Novel Baru</h3>
+                    <form id="novelForm" onsubmit="publishNewNovel(event)">
+                        <label><b>Judul Novel:</b></label>
+                        <input type="text" id="title" placeholder="Masukkan judul novel..." required>
+                        
+                        <label><b>Nama Penulis:</b></label>
+                        <input type="text" id="author" placeholder="Nama penulis..." required>
+                        
+                        <label><b>Unggah Gambar Sampul (Cover):</b></label>
+                        <input type="file" id="coverUpload" accept="image/*" onchange="processCover(event)">
+                        
+                        <!-- Tempat Penampungan Bab Dinamis Sebelum Klik Publish -->
+                        <div id="createNovelChaptersContainer">
+                            <div class="chapter-block-box" id="create_chap_box_1">
+                                <h4 style="font-size:0.9rem; margin-bottom:5px; color:#4b5563;">Form Bab 1</h4>
+                                <label style="font-size:0.85rem;">Judul Bab 1:</label>
+                                <input type="text" class="create-chap-title" value="Bab 1: Awal Perjalanan" required>
+                                
+                                <label style="font-size:0.85rem;"><b>Konten Bab 1 (Urutan Sesuai Pembuatan):</b></label>
+                                <div class="create-chap-blocks" id="create_chap_blocks_1">
+                                    <!-- Default block 1: text -->
+                                    <div class="content-block-item" data-type="text">
+                                        <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks]</span>
+                                        <textarea class="block-text-value" style="height: 80px;" placeholder="Tulis cerita bab..." required></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="block-type-selector">
+                                    <button type="button" onclick="addBlockToCreationChapter(1, 'text')" style="background:#4b5563;">➕ Tambah Teks</button>
+                                    <button type="button" onclick="addBlockToCreationChapter(1, 'image')" style="background:#8c6239;">🖼️ Tambah Ilustrasi</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FUNGSI TAMBAH BAB BARU SEBELUM TOMBOL PUBLISH DIKLIK -->
+                        <button type="button" onclick="addMoreChapterFieldsToCreateForm()" style="background:#10b981; margin-bottom:20px;">
+                            ➕ Tambah Bab Baru Ke Form Pengisian
+                        </button>
+                        
+                        <button type="submit" style="background:var(--accent-color); font-size:1.1rem; padding:12px;">
+                            🚀 Terbitkan Novel Beserta Seluruh Bab Di Atas
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: LIVE SIMULATED PREVIEW LIKE READER LINK -->
+            <div>
+                <div class="preview-section">
+                    <h3 style="color: var(--reader-accent);">📱 Live Preview (Sesuai Link Pembaca)</h3>
+                    <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; font-style: italic;">
+                        *Kotak di bawah ini mensimulasikan tampilan asli pembaca saat ini dengan konten urut.
+                    </p>
+                    
+                    <div class="reader-simulation-box">
+                        <!-- Simulated Navigation -->
+                        <div style="background:#fff; padding: 6px 10px; display:flex; justify-content:space-between; align-items:center; border-radius:4px; font-size:0.8rem; margin-bottom:15px; border:1px solid #e0dacb;">
+                            <span style="font-weight:bold; color:var(--reader-accent); cursor:pointer;" onclick="renderSimCatalog()">📚 Katalog Utama</span>
+                            <select id="simChapterSelect" class="hidden" onchange="changeSimChapter(this.value)" style="width:auto; padding:2px; margin:0; font-size:0.75rem;"></select>
+                        </div>
+
+                        <!-- Simulated Areas -->
+                        <div id="simCatalogArea"></div>
+                        <div id="simReadingArea" class="hidden">
+                            <h2 id="simChapterTitle" style="font-size:1.3rem; text-align:center; color:var(--reader-accent); margin-bottom:15px;"></h2>
+                            <div id="simNovelContent" class="sim-novel-content"></div>
+                            
+                            <!-- Comment Preview and Admin Reply System -->
+                            <div style="margin-top:30px; border-top: 1px solid #e0dacb; padding-top:15px;">
+                                <h4 style="font-size:0.9rem; font-family:sans-serif;">Ulasan Pembaca & Balasan Admin:</h4>
+                                <div id="simCommentsDisplay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedCoverBase64 = "";
+        let selectedNovelIdForEdit = null;
+        let activeNovelCreateChaptersCount = 1;
+        
+        // Sim Reader state
+        let simActiveNovel = null;
+        let simCurrentChapIdx = 0;
+
+        function checkPassword() {
+            if (document.getElementById('adminPassword').value === "admin123") {
+                sessionStorage.setItem('admin_logged_in', 'true');
+                showDashboard();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginArea').classList.add('hidden');
+            document.getElementById('dashboardArea').classList.remove('hidden');
+            renderNovelList();
+            renderSimCatalog();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('admin_logged_in');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginArea').classList.remove('hidden');
+            document.getElementById('dashboardArea').classList.add('hidden');
+        }
+
+        function processCover(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { uploadedCoverBase64 = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle base64 for illustrations inside dynamic blocks
+        function processIllustration(event, previewImgId, hiddenInputId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(previewImgId).src = e.target.result;
+                    document.getElementById(previewImgId).classList.remove('hidden');
+                    document.getElementById(hiddenInputId).value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function getLibrary() {
+            let lib = localStorage.getItem('shared_novel_library');
+            if (!lib) {
+                const initialData = [{
+                    id: "novel_1001",
+                    title: "Petualangan Menembus Batas",
+                    author: "Sang Penulis",
+                    coverUrl: "",
+                    chapters: [{
+                        id: 1,
+                        title: "Bab 1: Awal dari Segalanya",
+                        blocks: [
+                            { type: "text", value: "Di sebuah desa terpencil yang dikelilingi oleh kabut abadi, hiduplah seorang pemuda bernama Arjuna." },
+                            { type: "text", value: "Namun, Arjuna selalu merasa ada sesuatu yang hilang dari dirinya. Setiap malam, ia memimpikan sebuah pedang bercahaya biru." }
+                        ]
+                    }]
+                }];
+                localStorage.setItem('shared_novel_library', JSON.stringify(initialData));
+                return initialData;
+            }
+            return JSON.parse(lib);
+        }
+
+        function renderNovelList() {
+            const library = getLibrary();
+            const container = document.getElementById('novelListContainer');
+            container.innerHTML = '';
+
+            library.forEach(novel => {
+                const item = document.createElement('div');
+                item.className = 'novel-item' + (selectedNovelIdForEdit === novel.id ? ' active' : '');
+                item.onclick = () => openEditMenu(novel.id);
+                item.innerHTML = `
+                    <div class="novel-info">
+                        <h4>📘 ${novel.title}</h4>
+                        <p>Penulis: ${novel.author} | total <b>${novel.chapters.length} Bab</b> aktif</p>
+                    </div>
+                    <div class="action-btns" onclick="event.stopPropagation();">
+                        <button class="edit-btn" onclick="openEditMenu('${novel.id}')">Pilihan & Edit BAB</button>
+                        <button class="delete-btn" onclick="deleteNovel('${novel.id}')">Hapus</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // FUNGSI DINAMIS UNTUK BLOCK PEMBUATAN BAB
+        function addBlockToCreationChapter(chapNum, type) {
+            const container = document.getElementById(`create_chap_blocks_${chapNum}`);
+            const blockId = 'block_create_' + Date.now() + '_' + Math.floor(Math.random()*1000);
+            const div = document.createElement('div');
+            div.className = 'content-block-item';
+            div.setAttribute('data-type', type);
+
+            if (type === 'text') {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks]</span>
+                    <textarea class="block-text-value" style="height: 80px;" placeholder="Tulis cerita bab..." required></textarea>
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            } else {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#8c6239;">[Blok Ilustrasi Gambar]</span>
+                    <input type="file" accept="image/*" onchange="processIllustration(event, '${blockId}_preview', '${blockId}_hidden')" required>
+                    <input type="hidden" class="block-image-value" id="${blockId}_hidden">
+                    <img id="${blockId}_preview" src="" class="hidden" style="max-height: 100px; margin-top:5px; display:block; border-radius:4px;">
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            }
+            container.appendChild(div);
+        }
+
+        // FUNGSI DINAMIS SEBELUM NOVEL DI-PUBLISH: TAMBAH FORM BAB BARU
+        function addMoreChapterFieldsToCreateForm() {
+            activeNovelCreateChaptersCount++;
+            const container = document.getElementById('createNovelChaptersContainer');
+            
+            const div = document.createElement('div');
+            div.className = 'chapter-block-box';
+            div.id = `create_chap_box_${activeNovelCreateChaptersCount}`;
+            div.innerHTML = `
+                <h4 style="font-size:0.9rem; margin-bottom:5px; color:#4b5563;">Form Bab ${activeNovelCreateChaptersCount}</h4>
+                <label style="font-size:0.85rem;">Judul Bab ${activeNovelCreateChaptersCount}:</label>
+                <input type="text" class="create-chap-title" placeholder="Contoh: Bab ${activeNovelCreateChaptersCount}: Rahasia Terbuka" required>
+                
+                <label style="font-size:0.85rem;"><b>Konten Bab ${activeNovelCreateChaptersCount} (Urutan Sesuai Pembuatan):</b></label>
+                <div class="create-chap-blocks" id="create_chap_blocks_${activeNovelCreateChaptersCount}">
+                    <div class="content-block-item" data-type="text">
+                        <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks]</span>
+                        <textarea class="block-text-value" style="height: 80px;" placeholder="Tulis cerita bab..." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="block-type-selector">
+                    <button type="button" onclick="addBlockToCreationChapter(${activeNovelCreateChaptersCount}, 'text')" style="background:#4b5563;">➕ Tambah Teks</button>
+                    <button type="button" onclick="addBlockToCreationChapter(${activeNovelCreateChaptersCount}, 'image')" style="background:#8c6239;">🖼️ Tambah Ilustrasi</button>
+                </div>
+                <button type="button" class="delete-btn" style="position:absolute; top:10px; right:10px; font-size:0.75rem; padding:3px 8px;" onclick="this.parentElement.remove()">Hapus Form Bab</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // TERBITKAN NOVEL DENGAN KESELURUHAN BAB YANG SUDAH DIISI
+        function publishNewNovel(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+
+            // Dapatkan setiap kotak bab buatan
+            const chapBoxes = document.querySelectorAll('#createNovelChaptersContainer .chapter-block-box');
+            const chaptersArray = [];
+
+            chapBoxes.forEach((box, i) => {
+                const titleInput = box.querySelector('.create-chap-title');
+                if (titleInput) {
+                    const blockItems = box.querySelectorAll('.create-chap-blocks .content-block-item');
+                    const blocks = [];
+                    
+                    blockItems.forEach(b => {
+                        const type = b.getAttribute('data-type');
+                        if (type === 'text') {
+                            const val = b.querySelector('.block-text-value').value;
+                            blocks.push({ type: "text", value: val });
+                        } else {
+                            const val = b.querySelector('.block-image-value').value;
+                            blocks.push({ type: "image", value: val });
+                        }
+                    });
+
+                    chaptersArray.push({
+                        id: i + 1,
+                        title: titleInput.value,
+                        blocks: blocks
+                    });
+                }
+            });
+
+            if (chaptersArray.length === 0) {
+                alert("Harus ada minimal 1 Bab yang diisi!");
+                return;
+            }
+
+            const newNovel = {
+                id: "novel_" + Date.now(),
+                title: title,
+                author: author,
+                coverUrl: uploadedCoverBase64,
+                chapters: chaptersArray
+            };
+
+            const library = getLibrary();
+            library.push(newNovel);
+            localStorage.setItem('shared_novel_library', JSON.stringify(library));
+
+            // Reset Form ke keadaan semula
+            document.getElementById('novelForm').reset();
+            document.getElementById('createNovelChaptersContainer').innerHTML = `
+                <div class="chapter-block-box" id="create_chap_box_1">
+                    <h4 style="font-size:0.9rem; margin-bottom:5px; color:#4b5563;">Form Bab 1</h4>
+                    <label style="font-size:0.85rem;">Judul Bab 1:</label>
+                    <input type="text" class="create-chap-title" value="Bab 1: Awal Perjalanan" required>
+                    <label style="font-size:0.85rem;"><b>Konten Bab 1 (Urutan Sesuai Pembuatan):</b></label>
+                    <div class="create-chap-blocks" id="create_chap_blocks_1">
+                        <div class="content-block-item" data-type="text">
+                            <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks]</span>
+                            <textarea class="block-text-value" style="height: 80px;" placeholder="Tulis cerita bab..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="block-type-selector">
+                        <button type="button" onclick="addBlockToCreationChapter(1, 'text')" style="background:#4b5563;">➕ Tambah Teks</button>
+                        <button type="button" onclick="addBlockToCreationChapter(1, 'image')" style="background:#8c6239;">🖼️ Tambah Ilustrasi</button>
+                    </div>
+                </div>
+            `;
+            uploadedCoverBase64 = "";
+            activeNovelCreateChaptersCount = 1;
+
+            alert(`Sukses Terbit! Novel "${title}" berhasil ditambahkan langsung dengan ${chaptersArray.length} Bab.`);
+            
+            renderNovelList();
+            renderSimCatalog();
+        }
+
+        // OPEN MENU MANAJEMEN SELESAI PILIHAN BAB NOVEL
+        function openEditMenu(novelId) {
+            selectedNovelIdForEdit = novelId;
+            renderNovelList();
+
+            const library = getLibrary();
+            const novel = library.find(n => n.id === novelId);
+            if(!novel) return;
+
+            document.getElementById('editChaptersSection').classList.remove('hidden');
+            document.getElementById('specificChapterEditForm').classList.add('hidden');
+            document.getElementById('editNovelTitleHeader').innerText = `Kelola Seluruh Bab: ${novel.title}`;
+            
+            renderCurrentChapters(novel);
+        }
+
+        // TAMPILKAN PILIHAN KESELURUHAN BAB BESERTA FITUR EDIT & HAPUS DI SETIAP BAB
+        function renderCurrentChapters(novel) {
+            const chapListDiv = document.getElementById('currentChaptersList');
+            chapListDiv.innerHTML = '';
+
+            novel.chapters.forEach((chap, index) => {
+                const blockCount = chap.blocks ? chap.blocks.length : (chap.content ? chap.content.length : 0);
+                const div = document.createElement('div');
+                div.style = "background:#fff; padding:10px 15px; border-radius:6px; border:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;";
+                div.innerHTML = `
+                    <div style="font-size:0.95rem;">
+                        <b>Bab ${index + 1}:</b> ${chap.title}
+                        <span style="font-size:0.75rem; color:#888; display:block;">(${blockCount} Blok Elemen Cerita)</span>
+                    </div>
+                    <div class="action-btns">
+                        <button class="edit-btn" style="padding:4px 10px; font-size:0.8rem;" onclick="openSpecificChapterEditField(${index})">Edit Konten</button>
+                        <button class="delete-btn" style="padding:4px 10px; font-size:0.8rem;" onclick="removeChapter(${index})">Hapus</button>
+                    </div>
+                `;
+                chapListDiv.appendChild(div);
+            });
+        }
+
+        // KETIKA FUNGSI EDIT DITEKAN: BUKA FORM EDIT KONTEN DENGAN BLOK TERURUT
+        function openSpecificChapterEditField(index) {
+            const library = getLibrary();
+            const novel = library.find(n => n.id === selectedNovelIdForEdit);
+            if(!novel || !novel.chapters[index]) return;
+
+            const targetChap = novel.chapters[index];
+            
+            document.getElementById('specificChapterEditForm').classList.remove('hidden');
+            document.getElementById('specificEditHeader').innerText = `📝 Mengedit Konten: Bab ${index + 1}`;
+            
+            document.getElementById('editTargetChapIndex').value = index;
+            document.getElementById('editTargetChapTitle').value = targetChap.title;
+            
+            const blocksContainer = document.getElementById('editBlocksContainer');
+            blocksContainer.innerHTML = '';
+
+            // Migrasi dari model lama ke model blok baru jika perlu
+            let blocks = targetChap.blocks;
+            if(!blocks && targetChap.content) {
+                blocks = targetChap.content.map(p => ({ type: "text", value: p }));
+            }
+            if(!blocks) blocks = [];
+
+            blocks.forEach((block, bIdx) => {
+                renderBlockInEditor(block, bIdx);
+            });
+            
+            document.getElementById('specificChapterEditForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Render block di editor pengeditan bab
+        function renderBlockInEditor(block, bIdx) {
+            const container = document.getElementById('editBlocksContainer');
+            const blockId = 'block_edit_' + bIdx + '_' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'content-block-item';
+            div.setAttribute('data-type', block.type);
+
+            if (block.type === 'text') {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks]</span>
+                    <textarea class="block-text-value" style="height: 80px;" required>${block.value}</textarea>
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            } else {
+                const imgClass = block.value ? '' : 'hidden';
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#8c6239;">[Blok Ilustrasi Gambar]</span>
+                    <input type="file" accept="image/*" onchange="processIllustration(event, '${blockId}_preview', '${blockId}_hidden')">
+                    <input type="hidden" class="block-image-value" id="${blockId}_hidden" value="${block.value || ''}">
+                    <img id="${blockId}_preview" src="${block.value || ''}" class="${imgClass}" style="max-height: 100px; margin-top:5px; display:block; border-radius:4px;">
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            }
+            container.appendChild(div);
+        }
+
+        // TAMBAH BLOK BARU KE FORM EDIT KETIKA EDIT SEDANG BERJALAN
+        function addBlockToEditForm(type) {
+            const blockId = 'block_edit_new_' + Date.now();
+            const container = document.getElementById('editBlocksContainer');
+            const div = document.createElement('div');
+            div.className = 'content-block-item';
+            div.setAttribute('data-type', type);
+
+            if (type === 'text') {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks Baru]</span>
+                    <textarea class="block-text-value" style="height: 80px;" placeholder="Tulis cerita bab..." required></textarea>
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            } else {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#8c6239;">[Blok Ilustrasi Baru]</span>
+                    <input type="file" accept="image/*" onchange="processIllustration(event, '${blockId}_preview', '${blockId}_hidden')" required>
+                    <input type="hidden" class="block-image-value" id="${blockId}_hidden">
+                    <img id="${blockId}_preview" src="" class="hidden" style="max-height: 100px; margin-top:5px; display:block; border-radius:4px;">
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            }
+            container.appendChild(div);
+        }
+
+        // KONTROL TAMBAH BLOK BAB BARU DI FORM BAWAH
+        function addBlockToNewChapterForm(type) {
+            const container = document.getElementById('newChapBlocksContainer');
+            const blockId = 'block_newchap_' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'content-block-item';
+            div.setAttribute('data-type', type);
+
+            if (type === 'text') {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#4b5563;">[Blok Teks]</span>
+                    <textarea class="block-text-value" style="height: 80px;" placeholder="Tulis konten bab..." required></textarea>
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            } else {
+                div.innerHTML = `
+                    <span style="font-size:0.75rem; font-weight:bold; color:#8c6239;">[Blok Ilustrasi Gambar]</span>
+                    <input type="file" accept="image/*" onchange="processIllustration(event, '${blockId}_preview', '${blockId}_hidden')" required>
+                    <input type="hidden" class="block-image-value" id="${blockId}_hidden">
+                    <img id="${blockId}_preview" src="" class="hidden" style="max-height: 100px; margin-top:5px; display:block; border-radius:4px;">
+                    <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px;" onclick="this.parentElement.remove()">X</button>
+                `;
+            }
+            container.appendChild(div);
+        }
+
+        // TOMBOL SAVE: SIMPAN DAN PUBLISH PERUBAHAN KE LOCALSTORAGE
+        function saveChapterChanges() {
+            const index = parseInt(document.getElementById('editTargetChapIndex').value);
+            const newTitle = document.getElementById('editTargetChapTitle').value;
+            
+            const blockItems = document.querySelectorAll('#editBlocksContainer .content-block-item');
+            const blocks = [];
+
+            blockItems.forEach(b => {
+                const type = b.getAttribute('data-type');
+                if (type === 'text') {
+                    const val = b.querySelector('.block-text-value').value;
+                    blocks.push({ type: "text", value: val });
+                } else {
+                    const val = b.querySelector('.block-image-value').value;
+                    blocks.push({ type: "image", value: val });
+                }
+            });
+
+            if(!newTitle || blocks.length === 0) {
+                alert("Judul Bab dan Konten Bab tidak boleh kosong!");
+                return;
+            }
+
+            const library = getLibrary();
+            const novelIdx = library.findIndex(n => n.id === selectedNovelIdForEdit);
+            if(novelIdx === -1) return;
+
+            // Simpan pembaruan bab terpilih
+            library[novelIdx].chapters[index].title = newTitle;
+            library[novelIdx].chapters[index].blocks = blocks;
+            // Hapus model lama untuk kebersihan data
+            delete library[novelIdx].chapters[index].content;
+
+            localStorage.setItem('shared_novel_library', JSON.stringify(library));
+            
+            alert("Perubahan Bab Berhasil Disimpan dan Dipublish secara Real-time!");
+            document.getElementById('specificChapterEditForm').classList.add('hidden');
+            
+            renderCurrentChapters(library[novelIdx]);
+            
+            // Sync dengan live preview pembaca di sebelah kanan
+            if(simActiveNovel && simActiveNovel.id === selectedNovelIdForEdit) {
+                selectSimNovel(selectedNovelIdForEdit);
+            }
+        }
+
+        // TOMBOL CANCEL: MEMBATALKAN PERUBAHAN
+        function cancelChapterChanges() {
+            if(confirm("Batalkan semua perubahan konten bab ini?")) {
+                document.getElementById('specificChapterEditForm').classList.add('hidden');
+            }
+        }
+
+        // FUNGSI TAMBAH BAB BARU DI BAGIAN BAWAH SETELAH BAB TERAKHIR
+        function addNewChapter(e) {
+            e.preventDefault();
+            if(!selectedNovelIdForEdit) return;
+
+            const library = getLibrary();
+            const novelIdx = library.findIndex(n => n.id === selectedNovelIdForEdit);
+            if(novelIdx === -1) return;
+
+            const title = document.getElementById('newChapTitle').value;
+            
+            const blockItems = document.querySelectorAll('#newChapBlocksContainer .content-block-item');
+            const blocks = [];
+
+            blockItems.forEach(b => {
+                const type = b.getAttribute('data-type');
+                if (type === 'text') {
+                    const val = b.querySelector('.block-text-value').value;
+                    blocks.push({ type: "text", value: val });
+                } else {
+                    const val = b.querySelector('.block-image-value').value;
+                    blocks.push({ type: "image", value: val });
+                }
+            });
+
+            if (blocks.length === 0) {
+                alert("Tolong tambahkan minimal satu blok isi atau ilustrasi terlebih dahulu!");
+                return;
+            }
+
+            const newChap = {
+                id: library[novelIdx].chapters.length + 1,
+                title: title,
+                blocks: blocks
+            };
+
+            library[novelIdx].chapters.push(newChap);
+            localStorage.setItem('shared_novel_library', JSON.stringify(library));
+
+            document.getElementById('addChapterForm').reset();
+            document.getElementById('newChapBlocksContainer').innerHTML = '';
+            
+            renderCurrentChapters(library[novelIdx]);
+            renderNovelList();
+            
+            if(simActiveNovel && simActiveNovel.id === selectedNovelIdForEdit) {
+                selectSimNovel(selectedNovelIdForEdit);
+            }
+            alert("Sukses menambah bab baru langsung di posisi terakhir!");
+        }
+
+        // HAPUS SEBUAH BAB SPESIFIK
+        function removeChapter(chapIndex) {
+            const library = getLibrary();
+            const novelIdx = library.findIndex(n => n.id === selectedNovelIdForEdit);
+            if(novelIdx === -1) return;
+
+            if(library[novelIdx].chapters.length <= 1) {
+                alert("Novel harus menyisakan minimal 1 bab cerita!");
+                return;
+            }
+
+            if(confirm(`Apakah Anda yakin ingin menghapus "${library[novelIdx].chapters[chapIndex].title}" secara permanen?`)) {
+                library[novelIdx].chapters.splice(chapIndex, 1);
+                localStorage.setItem('shared_novel_library', JSON.stringify(library));
+                
+                document.getElementById('specificChapterEditForm').classList.add('hidden');
+                renderCurrentChapters(library[novelIdx]);
+                renderNovelList();
+                
+                if(simActiveNovel && simActiveNovel.id === selectedNovelIdForEdit) {
+                    selectSimNovel(selectedNovelIdForEdit);
+                } else {
+                    renderSimCatalog();
+                }
+            }
+        }
+
+        function deleteNovel(id) {
+            if (confirm("Hapus seluruh novel beserta semua babnya secara permanen?")) {
+                let library = getLibrary();
+                library = library.filter(n => n.id !== id);
+                localStorage.setItem('shared_novel_library', JSON.stringify(library));
+                if(selectedNovelIdForEdit === id) closeEditMenu();
+                renderNovelList();
+                renderSimCatalog();
+            }
+        }
+
+        function closeEditMenu() {
+            selectedNovelIdForEdit = null;
+            document.getElementById('editChaptersSection').classList.add('hidden');
+            document.getElementById('specificChapterEditForm').classList.add('hidden');
+            renderNovelList();
+        }
+
+        // ==========================================
+        // SIMULATED READER CONTROLS (SIM LINK PEMBACA)
+        // ==========================================
+        function renderSimCatalog() {
+            const library = getLibrary();
+            document.getElementById('simCatalogArea').classList.remove('hidden');
+            document.getElementById('simReadingArea').classList.add('hidden');
+            document.getElementById('simChapterSelect').classList.add('hidden');
+            
+            const container = document.getElementById('simCatalogArea');
+            container.innerHTML = '';
+
+            if(library.length === 0) {
+                container.innerHTML = '<p style="text-align:center; font-style:italic; font-size:0.85rem;">Belum ada novel terbit.</p>';
+                return;
+            }
+
+            library.forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'sim-catalog-card';
+                const cover = n.coverUrl ? `<img src="${n.coverUrl}" class="sim-card-cover">` : `<div class="sim-card-cover" style="font-size:10px; padding:10px; text-align:center;">No Cover</div>`;
+                div.innerHTML = `
+                    ${cover}
+                    <div class="sim-card-details">
+                        <div>
+                            <h4 style="font-size:0.95rem; color:var(--reader-accent);">${n.title}</h4>
+                            <p style="font-size:0.75rem; color:#666;">Karya: ${n.author}</p>
+                        </div>
+                        <button style="font-size:0.75rem; padding:3px 8px; background:var(--reader-accent);" onclick="selectSimNovel('${n.id}')">Baca Live</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function selectSimNovel(id) {
+            const library = getLibrary();
+            simActiveNovel = library.find(n => n.id === id);
+            if(!simActiveNovel) { renderSimCatalog(); return; }
+
+            document.getElementById('simCatalogArea').classList.add('hidden');
+            document.getElementById('simReadingArea').classList.remove('hidden');
+            
+            const select = document.getElementById('simChapterSelect');
+            select.classList.remove('hidden');
+            select.innerHTML = '';
+            simActiveNovel.chapters.forEach((chap, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = `Bab ${idx+1}`;
+                select.appendChild(opt);
+            });
+
+            simCurrentChapIdx = 0;
+            renderSimChapter();
+        }
+
+        function changeSimChapter(val) {
+            simCurrentChapIdx = parseInt(val);
+            renderSimChapter();
+        }
+
+        function renderSimChapter() {
+            const chapter = simActiveNovel.chapters[simCurrentChapIdx];
+            if(!chapter) {
+                document.getElementById('simChapterTitle').innerText = "Bab Tidak Ditemukan";
+                document.getElementById('simNovelContent').innerHTML = "";
+                return;
+            }
+            document.getElementById('simChapterTitle').innerText = chapter.title;
+            
+            const contentDiv = document.getElementById('simNovelContent');
+            contentDiv.innerHTML = '';
+            
+            // Render urutan sesuai tipe blok data (teks / ilustrasi gambar)
+            if(chapter.blocks) {
+                chapter.blocks.forEach(block => {
+                    if (block.type === 'text') {
+                        const p = document.createElement('p');
+                        p.innerText = block.value;
+                        contentDiv.appendChild(p);
+                    } else if (block.type === 'image' && block.value) {
+                        const img = document.createElement('img');
+                        img.src = block.value;
+                        img.className = 'sim-illustration-img';
+                        contentDiv.appendChild(img);
+                    }
+                });
+            } else if (chapter.content) { // Fallback data model lama
+                chapter.content.forEach(pText => {
+                    const p = document.createElement('p');
+                    p.innerText = pText;
+                    contentDiv.appendChild(p);
+                });
+            }
+
+            document.getElementById('simChapterSelect').value = simCurrentChapIdx;
+            displaySimComments();
+        }
+
+        function displaySimComments() {
+            const key = `${simActiveNovel.id}_chap_${simCurrentChapIdx}`;
+            const container = document.getElementById('simCommentsDisplay');
+            container.innerHTML = '';
+
+            let commentsDb = JSON.parse(localStorage.getItem('reader_comments')) || {};
+            let list = commentsDb[key] || [];
+
+            if(list.length === 0) {
+                container.innerHTML = '<p style="font-size:0.8rem; font-style:italic; color:#777;">Tidak ada ulasan komentar.</p>';
+                return;
+            }
+
+            list.forEach((c, cIdx) => {
+                const div = document.createElement('div');
+                div.className = 'comment-box';
+                
+                let repliesHtml = '';
+                if(c.replies && c.replies.length > 0) {
+                    c.replies.forEach(r => {
+                        repliesHtml += `
+                            <div class="reply-item">
+                                <b>🛡️ ${r.name} (Admin):</b> ${r.text} <span style="font-size:0.7rem; color:#888;">(${r.time})</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                div.innerHTML = `
+                    <div><b>👤 ${c.name}:</b> ${c.text} <span style="font-size:0.75rem; color:#999;">(${c.time})</span></div>
+                    ${repliesHtml}
+                    <div class="reply-input-group">
+                        <input type="text" id="reply_input_${cIdx}" placeholder="Ketik balasan resmi admin...">
+                        <button onclick="submitAdminReply(${cIdx})">Balas</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function submitAdminReply(commentIndex) {
+            const inputField = document.getElementById(`reply_input_${commentIndex}`);
+            const replyText = inputField.value.trim();
+            if(!replyText) return;
+
+            const key = `${simActiveNovel.id}_chap_${simCurrentChapIdx}`;
+            let commentsDb = JSON.parse(localStorage.getItem('reader_comments')) || {};
+            
+            if(commentsDb[key] && commentsDb[key][commentIndex]) {
+                if(!commentsDb[key][commentIndex].replies) {
+                    commentsDb[key][commentIndex].replies = [];
+                }
+                
+                const now = new Date();
+                const timeStr = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+
+                commentsDb[key][commentIndex].replies.push({
+                    name: "Admin Resmi",
+                    text: replyText,
+                    time: timeStr
+                });
+
+                localStorage.setItem('reader_comments', JSON.stringify(commentsDb));
+                inputField.value = '';
+                displaySimComments();
+            }
+        }
+
+        window.onload = function() {
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                showDashboard();
+            }
+        };
+    </script>
+</body>
+</html>
