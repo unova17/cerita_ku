@@ -3,398 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Situs Baca Novel Modern - Cloud Real-Time</title>
+    <title>Koleksi Novel Digital - Halaman Pembaca V6</title>
     <style>
         :root {
-            --bg-color: #f4f1ea; /* Warna kertas koran agar mata tidak lelah */
+            --bg-color: #f7f4eb;
             --text-color: #2b2b2b;
-            --primary-color: #8c6239;
-            --card-bg: #ffffff;
-            --border-color: #e0dacb;
+            --panel-bg: #ffffff;
+            --accent-color: #8c6239;
+            --border-color: #e2d9c8;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Georgia', serif; /* Font nyaman khas novel */
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Georgia', serif; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.8;
-            padding: 0;
-        }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; line-height: 1.8; }
 
-        /* NAVBAR RESPONSIVE */
-        header {
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        .container { max-width: 800px; margin: 0 auto; }
 
-        .nav-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
+        header h1 { color: var(--accent-color); font-size: 2.5rem; margin-bottom: 10px; }
 
-        .logo {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-family: sans-serif;
-        }
+        .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        
+        .novel-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .novel-card:hover { transform: translateY(-5px); }
+        .novel-card img { width: 100%; height: 280px; object-fit: cover; background: #e5e5e5; }
+        .novel-card-info { padding: 15px; }
+        .novel-card-info h3 { font-size: 1.1rem; margin-bottom: 5px; color: #111; }
+        .novel-card-info p { font-size: 0.85rem; color: #666; font-style: italic; }
 
-        /* LAYOUT UTAMA */
-        .main-layout {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
+        .reader-section { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .back-btn { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-bottom: 20px; font-family: sans-serif; }
+        
+        .chapter-selector { margin-bottom: 30px; width: 100%; padding: 10px; font-size: 1rem; border-radius: 6px; border: 1px solid var(--border-color); }
+        
+        .content-area p { margin-bottom: 20px; font-size: 1.15rem; text-align: justify; }
+        .content-area img { max-width: 100%; display: block; margin: 30px auto; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
-        /* AREA KATALOG NOVEL */
-        .catalog-section h2 {
-            margin-bottom: 20px;
-            font-family: sans-serif;
-            color: #4a3728;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 5px;
-        }
-
-        .novel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .novel-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-
-        .novel-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-
-        .novel-cover {
-            width: 90px;
-            height: 130px;
-            object-fit: cover;
-            background: #e5e5e5;
-        }
-
-        .novel-details {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .novel-details h3 {
-            font-size: 1.1rem;
-            color: #111;
-            margin-bottom: 5px;
-            font-family: sans-serif;
-        }
-
-        .novel-details p {
-            font-size: 0.85rem;
-            color: #666;
-            font-family: sans-serif;
-        }
-
-        .read-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            align-self: flex-start;
-            font-family: sans-serif;
-            font-weight: bold;
-        }
-
-        /* AREA MEMBACA NOVEL */
-        .reading-section {
-            background: var(--card-bg);
-            padding: 30px 40px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-
-        .btn-back {
-            background: none;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 5px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            margin-bottom: 25px;
-            font-family: sans-serif;
-        }
-
-        .btn-back:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .novel-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 20px;
-        }
-
-        .novel-header h1 {
-            font-size: 1.8rem;
-            color: #111;
-            margin-bottom: 8px;
-        }
-
-        .novel-header .author {
-            font-size: 0.95rem;
-            color: #666;
-            font-style: italic;
-        }
-
-        .chapter-selector-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 30px;
-            font-family: sans-serif;
-        }
-
-        .chapter-select {
-            padding: 8px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.9rem;
-            background: white;
-        }
-
-        /* RENDER STRUKTUR BLOG URUT */
-        .content-area p {
-            margin-bottom: 20px;
-            text-indent: 2em;
-            text-align: justify;
-            font-size: 1.15rem;
-            color: #2b2b2b;
-        }
-
-        .content-illustration {
-            max-width: 100%;
-            height: auto;
-            border-radius: 6px;
-            margin: 25px auto;
-            display: block;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
+        /* AREA KOMENTAR */
+        .comment-section { margin-top: 50px; padding-top: 30px; border-top: 2px dashed var(--border-color); font-family: sans-serif; }
+        .comment-section h3 { margin-bottom: 20px; color: var(--accent-color); }
+        
+        .comment-form input, .comment-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; font-family: sans-serif; }
+        .comment-form button { background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        .comments-list { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        .comment-item { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; }
+        .comment-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; margin-bottom: 8px; font-weight: bold; }
+        .comment-body { font-size: 0.95rem; color: #333; }
+        
+        .admin-reply { background: #f0fdf4; border-left: 4px solid #10b981; margin-top: 10px; padding: 10px 15px; border-radius: 0 8px 8px 0; }
+        .admin-reply-header { font-size: 0.8rem; color: #15803d; font-weight: bold; margin-bottom: 4px; }
+        
         .hidden { display: none !important; }
-
-        @media (max-width: 600px) {
-            .reading-section { padding: 20px 15px; }
-            .novel-header h1 { font-size: 1.4rem; }
-            .content-area p { font-size: 1.05rem; text-indent: 1.5em; }
-        }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="nav-container">
-            <a href="#" class="logo" id="logoLink">📚 NovelKita</a>
-            <span style="font-size: 0.85rem; font-family:sans-serif; color:#888;">Mode Pembaca</span>
+    <div class="container">
+        <!-- SEKSI PERPUSTAKAAN UTAMA -->
+        <div id="libraryView">
+            <header>
+                <h1>Koleksi Novel Kita</h1>
+                <p>Silakan pilih novel gratis terbaik di bawah ini untuk mulai membaca</p>
+            </header>
+            <div class="novel-grid" id="novelGridContainer"></div>
         </div>
-    </header>
 
-    <main class="main-layout">
-        <section id="catalogSection" class="catalog-section">
-            <h2>Katalog Novel Terbaru</h2>
-            <div id="novelGrid" class="novel-grid">
-                <p style="text-align: center; font-family: sans-serif; color: #888;">Menghubungkan ke server cloud...</p>
+        <!-- SEKSI BACA CERITA & KOMENTAR -->
+        <div id="readerView" class="hidden">
+            <button class="back-btn" id="backToLibBtn">⬅ Kembali ke Rak Buku</button>
+            <div class="reader-section">
+                <h2 id="readerNovelTitle" style="margin-bottom: 5px; color: var(--accent-color);">Judul Novel</h2>
+                <p id="readerNovelAuthor" style="font-size:0.9rem; color:#666; margin-bottom:20px; font-style:italic;">Penulis</p>
+                
+                <select id="chapterSelect" class="chapter-selector"></select>
+                
+                <h3 id="readerChapterTitle" style="margin-bottom: 25px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">Bab X: ...</h3>
+                <div id="chapterContent" class="content-area"></div>
+
+                <!-- FORM & LIST KOMENTAR PER BAB -->
+                <div class="comment-section">
+                    <h3>💬 Diskusi Bab (<span id="commentCount">0</span>)</h3>
+                    
+                    <div class="comment-form">
+                        <input type="text" id="commentorName" placeholder="Nama Anda..." required>
+                        <textarea id="commentorText" rows="3" placeholder="Tulis komentar/opini Anda tentang bab ini..." required></textarea>
+                        <button id="submitCommentBtn">Kirim Komentar</button>
+                    </div>
+
+                    <div class="comments-list" id="commentsContainer"></div>
+                </div>
             </div>
-        </section>
-
-        <section id="readingSection" class="reading-section hidden">
-            <button class="btn-back" id="btnBack">← Kembali ke Katalog</button>
-            
-            <div class="novel-header">
-                <h1 id="activeNovelTitle">Judul Novel</h1>
-                <div class="author" id="activeNovelAuthor">Oleh: Penulis</div>
-            </div>
-
-            <div class="chapter-selector-container">
-                <label for="chapterSelect">Pilih Bab: </label>
-                <select id="chapterSelect" class="chapter-select"></select>
-            </div>
-
-            <div id="chapterTitle" style="text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 25px; color: var(--primary-color);"></div>
-
-            <div id="chapterContent" class="content-area"></div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ==========================================
-        // WAJIB: Pastikan Firebase Config ini SAMA PERSIS dengan yang di admin.html
-        // ==========================================
+        // CONFIG FIREBASE (GANTI DENGAN PUNYA ANDA!)
         const firebaseConfig = {
-        apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
-  	authDomain: "ceritakuw17.firebaseapp.com",
-  	databaseURL: "https://ceritakuw17-default-rtdb.asia-southeast1.firebasedatabase.app",
-  	projectId: "ceritakuw17",
-  	storageBucket: "ceritakuw17.firebasestorage.app",
-  	messagingSenderId: "523139592598",
-        appId: "1:523139592598:web:521645fc4e0e6367baedb7"
+  apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
+  authDomain: "ceritakuw17.firebaseapp.com",
+  databaseURL: "https://ceritakuw17-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ceritakuw17",
+  storageBucket: "ceritakuw17.firebasestorage.app",
+  messagingSenderId: "523139592598",
+  appId: "1:523139592598:web:521645fc4e0e6367baedb7"
         };
 
-        // Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // State Global Aplikasi Pembaca
-        let globalLibraryData = {};
-        let activeNovel = null;
+        let activeLibraryData = {};
+        let selectedNovelId = null;
+        let selectedChapterIndex = 0;
 
-        // Pasang Event Listener Awal (Scope ES Modules)
-        document.getElementById('logoLink').addEventListener('click', showCatalog);
-        document.getElementById('btnBack').addEventListener('click', showCatalog);
-        document.getElementById('chapterSelect').addEventListener('change', (e) => loadChapter(e.target.value));
+        document.getElementById('backToLibBtn').addEventListener('click', closeReader);
+        document.getElementById('chapterSelect').addEventListener('change', (e) => {
+            selectedChapterIndex = parseInt(e.target.value);
+            loadChapterContents();
+        });
+        document.getElementById('submitCommentBtn').addEventListener('click', postComment);
 
-        function showCatalog() {
-            document.getElementById('catalogSection').classList.remove('hidden');
-            document.getElementById('readingSection').classList.add('hidden');
-        }
-
-        // KONEKSI REAL-TIME: Otomatis merender data jika admin melakukan perubahan/penambahan novel
-        const libraryRef = ref(db, 'library/');
-        onValue(libraryRef, (snapshot) => {
-            const data = snapshot.val();
-            globalLibraryData = data || {};
-            
-            const grid = document.getElementById('novelGrid');
-            grid.innerHTML = '';
-
-            if (Object.keys(globalLibraryData).length === 0) {
-                grid.innerHTML = '<p style="text-align:center; font-family:sans-serif; color:#666; grid-column: 1/-1;">Belum ada novel yang diterbitkan secara online.</p>';
-                return;
-            }
-
-            // Render daftar katalog secara dinamis
-            Object.keys(globalLibraryData).forEach((key) => {
-                const novel = globalLibraryData[key];
-                const card = document.createElement('div');
-                card.className = 'novel-card';
-                card.id = `card_${key}`;
-
-                const cover = novel.coverUrl 
-                    ? `<img src="${novel.coverUrl}" class="novel-cover" alt="Cover">`
-                    : `<div class="novel-cover" style="display:flex; align-items:center; justify-content:center; font-size:11px; text-align:center; padding:10px; background:#e2dcd0; color:#5e5241;">No Cover</div>`;
-
-                card.innerHTML = `
-                    ${cover}
-                    <div class="novel-details">
-                        <div>
-                            <h3>${novel.title}</h3>
-                            <p>Penulis: ${novel.author}</p>
-                            <p style="margin-top:5px; color:#8c6239; font-weight:bold;">${novel.chapters ? novel.chapters.length : 0} Bab Aktif</p>
-                        </div>
-                        <button class="read-btn">Mulai Baca</button>
-                    </div>
-                `;
-                grid.appendChild(card);
-
-                // Tambahkan event klik untuk membuka konten novel
-                document.getElementById(`card_${key}`).addEventListener('click', () => openNovel(key));
-            });
-
-            // Jika pembaca sedang membuka suatu novel yang kebetulan sedang diedit admin, perbarui data bab secara langsung
-            if (activeNovel && globalLibraryData[activeNovel.uid]) {
-                const currentChapIdx = document.getElementById('chapterSelect').value;
-                openNovel(activeNovel.uid, currentChapIdx);
+        // Fetch Cloud Data secara realtime
+        onValue(ref(db, 'library/'), (snapshot) => {
+            activeLibraryData = snapshot.val() || {};
+            renderLibrary();
+            if(selectedNovelId) {
+                loadChapterContents(); // Update otomatis jika ada bab atau komentar baru masuk
             }
         });
 
-        function openNovel(novelId, TargetChapterIdx = 0) {
-            const novelData = globalLibraryData[novelId];
-            if (!novelData) return;
+        function renderLibrary() {
+            const grid = document.getElementById('novelGridContainer');
+            grid.innerHTML = '';
+            
+            Object.keys(activeLibraryData).forEach(key => {
+                const n = activeLibraryData[key];
+                const card = document.createElement('div');
+                card.className = 'novel-card';
+                card.onclick = () => openReader(key);
+                card.innerHTML = `
+                    <img src="${n.coverUrl || 'https://via.placeholder.com/220x280?text=No+Cover'}" alt="Cover">
+                    <div class="novel-card-info">
+                        <h3>${n.title}</h3>
+                        <p>Karya: ${n.author}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
 
-            // Simpan referensi unik ID novel yang sedang aktif
-            activeNovel = { uid: novelId, ...novelData };
-
-            document.getElementById('catalogSection').classList.add('hidden');
-            document.getElementById('readingSection').classList.remove('hidden');
-
-            document.getElementById('activeNovelTitle').innerText = activeNovel.title;
-            document.getElementById('activeNovelAuthor').innerText = `Karya: ${activeNovel.author}`;
-
-            // Bangun ulang opsi selektor bab
+        function openReader(novelId) {
+            selectedNovelId = novelId;
+            selectedChapterIndex = 0;
+            document.getElementById('libraryView').classList.add('hidden');
+            document.getElementById('readerView').classList.remove('hidden');
+            
+            const novel = activeLibraryData[novelId];
+            document.getElementById('readerNovelTitle').innerText = novel.title;
+            document.getElementById('readerNovelAuthor').innerText = `Karya: ${novel.author}`;
+            
             const select = document.getElementById('chapterSelect');
             select.innerHTML = '';
-            
-            const chapters = activeNovel.chapters || [];
-            chapters.forEach((chap, idx) => {
+            (novel.chapters || []).forEach((ch, idx) => {
                 const opt = document.createElement('option');
                 opt.value = idx;
-                opt.innerText = `Bab ${idx + 1}`;
+                opt.innerText = ch.title;
                 select.appendChild(opt);
             });
 
-            loadChapter(TargetChapterIdx);
+            loadChapterContents();
         }
 
-        function loadChapter(idx) {
-            const chapters = activeNovel.chapters || [];
-            const chapter = chapters[parseInt(idx)];
-            
-            if (!chapter) return;
+        function loadChapterContents() {
+            const novel = activeLibraryData[selectedNovelId];
+            if(!novel || !novel.chapters || !novel.chapters[selectedChapterIndex]) return;
 
-            document.getElementById('chapterTitle').innerText = chapter.title;
-            const contentArea = document.getElementById('chapterContent');
-            contentArea.innerHTML = '';
+            const ch = novel.chapters[selectedChapterIndex];
+            document.getElementById('readerChapterTitle').innerText = ch.title;
+            document.getElementById('chapterSelect').value = selectedChapterIndex;
 
-            // Render seluruh blok elemen (Teks / Gambar) secara urut sesuai pembuatan di admin
-            const blocks = chapter.blocks || [];
-            blocks.forEach(block => {
-                if (block.type === 'text') {
+            // Render Blok Isi Cerita
+            const contentDiv = document.getElementById('chapterContent');
+            contentDiv.innerHTML = '';
+            (ch.blocks || []).forEach(b => {
+                if(b.type === 'text') {
                     const p = document.createElement('p');
-                    p.innerText = block.value;
-                    contentArea.appendChild(p);
-                } else if (block.type === 'image' && block.value) {
+                    p.innerText = b.value;
+                    contentDiv.appendChild(p);
+                } else {
                     const img = document.createElement('img');
-                    img.src = block.value;
-                    img.className = 'content-illustration';
-                    img.alt = 'Ilustrasi cerita';
-                    contentArea.appendChild(img);
+                    img.src = b.value;
+                    contentDiv.appendChild(img);
                 }
             });
 
-            document.getElementById('chapterSelect').value = idx;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Sinkronisasi Membaca & Merender Komentar
+            renderComments(ch.comments);
+        }
+
+        function renderComments(commentsData) {
+            const container = document.getElementById('commentsContainer');
+            container.innerHTML = '';
+            
+            if(!commentsData) {
+                document.getElementById('commentCount').innerText = '0';
+                container.innerHTML = `<p style="font-size:0.9rem; color:#888; text-align:center;">Belum ada diskusi di bab ini. Jadilah yang pertama!</p>`;
+                return;
+            }
+
+            const keys = Object.keys(commentsData);
+            document.getElementById('commentCount').innerText = keys.length;
+
+            keys.forEach(key => {
+                const c = commentsData[key];
+                const div = document.createElement('div');
+                div.className = 'comment-item';
+                
+                let replyHTML = '';
+                if(c.reply) {
+                    replyHTML = `
+                        <div class="admin-reply">
+                            <div class="admin-reply-header">✍️ Balasan Admin:</div>
+                            <div class="comment-body">${c.reply}</div>
+                        </div>
+                    `;
+                }
+
+                div.innerHTML = `
+                    <div class="comment-header">
+                        <span>👤 ${c.name}</span>
+                        <span>${c.date || ''}</span>
+                    </div>
+                    <div class="comment-body">${c.text}</div>
+                    ${replyHTML}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function postComment() {
+            const nameInput = document.getElementById('commentorName');
+            const textInput = document.getElementById('commentorText');
+            
+            const name = nameInput.value.trim();
+            const text = textInput.value.trim();
+
+            if(!name || !text) {
+                alert("Mohon isi nama dan komentar Anda!");
+                return;
+            }
+
+            const dateStr = new Date().toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            const newComment = {
+                name: name,
+                text: text,
+                date: dateStr,
+                reply: "" // default kosong untuk dibalas admin nanti
+            };
+
+            // Simpan langsung ke endpoint spesifik bab tersebut di Firebase
+            const commentRef = ref(db, `library/${selectedNovelId}/chapters/${selectedChapterIndex}/comments`);
+            const newCommentPush = push(commentRef);
+            
+            set(newCommentPush, newComment).then(() => {
+                textInput.value = ''; // Reset form input teks saja
+                alert("Komentar berhasil dikirim!");
+            });
+        }
+
+        function closeReader() {
+            selectedNovelId = null;
+            document.getElementById('libraryView').classList.remove('hidden');
+            document.getElementById('readerView').classList.add('hidden');
         }
     </script>
 </body>
