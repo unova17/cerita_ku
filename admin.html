@@ -202,8 +202,11 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // ==========================================
+        // CONFIG FIREBASE (SAMA DENGAN INDEX.HTML)
+        // ==========================================
         const firebaseConfig = {
-          apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
+          apiKey: "PASTE_API_KEY_ANDA_DI_SINI",
           authDomain: "novel-kita.firebaseapp.com",
           databaseURL: "https://novel-kita-default-rtdb.firebaseio.com",
           projectId: "novel-kita",
@@ -217,6 +220,7 @@
         let selectedNovelIdForEdit = null;
         let globalCloudLibrary = {};
 
+        // Inisialisasi awal Login & Logouts
         document.getElementById('loginBtn').addEventListener('click', () => {
             if(document.getElementById('adminPassword').value === "admin123") {
                 sessionStorage.setItem('admin_logged_in', 'true'); showDashboard();
@@ -241,33 +245,56 @@
         document.getElementById('addTextBlockNewBtn').addEventListener('click', () => addBlockToContainer('newChapBlocksContainer', 'text'));
         document.getElementById('addImgBlockNewBtn').addEventListener('click', () => addBlockToContainer('newChapBlocksContainer', 'image'));
 
-        // Handler form pembuatan novel baru
+        // PERBAIKAN UTAMA: Handler form pembuatan novel baru yang gagal kirim
         document.getElementById('novelForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const title = document.getElementById('title').value;
-            const author = document.getElementById('author').value;
-            const status = document.getElementById('status').value;
-            const relationType = document.getElementById('relationType').value;
-            const relationTargetId = document.getElementById('relationTarget').value;
+            try {
+                const title = document.getElementById('title').value.trim();
+                const author = document.getElementById('author').value.trim();
+                const status = document.getElementById('status').value || 'On Going';
+                const relationType = document.getElementById('relationType').value || 'Standalone';
+                const relationTargetId = document.getElementById('relationTarget').value || '';
 
-            // Ambil data Bab 1 bawaan
-            const chapTitle = document.querySelector('.create-chap-title').value;
-            const blockVal = document.querySelector('.block-text-value').value;
+                // Proteksi pembacaan text area Bab 1
+                const chapTitleInput = document.querySelector('.create-chap-title');
+                const blockValInput = document.querySelector('.block-text-value');
+                
+                const chapTitle = chapTitleInput ? chapTitleInput.value.trim() : "Bab 1: Awal Cerita";
+                const blockVal = blockValInput ? blockValInput.value.trim() : "Mulai menulis cerita di sini...";
 
-            const newNovel = {
-                title, author, status, relationType, relationTargetId,
-                coverUrl: uploadedCoverBase64,
-                chapters: [{
-                    title: chapTitle,
-                    blocks: [{ type: 'text', value: blockVal }]
-                }]
-            };
+                if(!title || !author) {
+                    alert("Judul Novel dan Penulis tidak boleh kosong!");
+                    return;
+                }
 
-            push(ref(db, 'library/'), newNovel).then(() => {
-                alert("Novel Baru Sukses Diterbitkan!");
-                document.getElementById('novelForm').reset();
-                uploadedCoverBase64 = "";
-            });
+                const newNovel = {
+                    title: title,
+                    author: author,
+                    status: status,
+                    relationType: relationType,
+                    relationTargetId: relationTargetId,
+                    coverUrl: uploadedCoverBase64 || "",
+                    chapters: [{
+                        title: chapTitle,
+                        blocks: [{ type: 'text', value: blockVal }]
+                    }]
+                };
+
+                push(ref(db, 'library/'), newNovel)
+                .then(() => {
+                    alert("🎉 Novel Baru Sukses Diterbitkan ke Firebase Cloud!");
+                    document.getElementById('novelForm').reset();
+                    uploadedCoverBase64 = "";
+                })
+                .catch((error) => {
+                    alert("Gagal terhubung ke Firebase database. Cek konfigurasi Rules Anda.");
+                    console.error(error);
+                });
+
+            } catch (err) {
+                console.error("Terjadi error pada struktur script: ", err);
+                alert("Gagal memproses data. Cek console log browser Anda.");
+            }
         });
 
         function showDashboard() {
@@ -276,22 +303,22 @@
             onValue(ref(db, 'library/'), (snapshot) => {
                 globalCloudLibrary = snapshot.val() || {};
                 renderNovelList();
-                populateTargetDropdowns(); // Perbarui daftar dropdown target seri otomatis
+                populateTargetDropdowns();
                 if(selectedNovelIdForEdit && globalCloudLibrary[selectedNovelIdForEdit]) {
                     renderCurrentChapters(globalCloudLibrary[selectedNovelIdForEdit]);
                 }
             });
         }
 
-        // Isi Pilihan Target Seri berdasarkan novel yang ada di database
         function populateTargetDropdowns() {
             const addSelect = document.getElementById('relationTarget');
             const editSelect = document.getElementById('editNovelRelationTargetSelect');
+            if(!addSelect || !editSelect) return;
             
             const currentAddVal = addSelect.value;
             const currentEditVal = editSelect.value;
 
-            let optionsHTML = '<option value="">-- Pilih Novel Target --</option>';
+            let optionsHTML = '<option value="">-- Pilih Novel Target (Opsional) --</option>';
             Object.keys(globalCloudLibrary).forEach(key => {
                 optionsHTML += `<option value="${key}">${globalCloudLibrary[key].title}</option>`;
             });
@@ -403,6 +430,39 @@
             n.chapters[idx].blocks = blocks;
             set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => { alert("Bab diperbarui!"); document.getElementById('specificChapterEditForm').classList.add('hidden'); });
         }
+
+        // Jalankan Handler Tambah Bab Cepat (Di dalam panel kelola)
+        document.getElementById('addChapterForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const idx = selectedNovelIdForEdit;
+            if(!idx) return;
+
+            const n = globalCloudLibrary[idx];
+            if(!n.chapters) n.chapters = [];
+
+            const cTitle = document.getElementById('newChapTitle').value.trim();
+            const bItems = document.querySelectorAll('#newChapBlocksContainer .content-block-item');
+            
+            const blocks = [];
+            bItems.forEach(b => {
+                const type = b.getAttribute('data-type');
+                const val = type === 'text' ? b.querySelector('.block-text-value').value : b.querySelector('.block-image-value').value;
+                blocks.push({ type, value: val });
+            });
+
+            if(blocks.length === 0) {
+                alert("Mohon tambahkan minimal satu paragraf teks atau gambar ilustrasi!");
+                return;
+            }
+
+            n.chapters.push({ title: cTitle, blocks: blocks });
+
+            set(ref(db, `library/${idx}`), n).then(() => {
+                alert("Bab baru berhasil ditambahkan!");
+                document.getElementById('addChapterForm').reset();
+                document.getElementById('newChapBlocksContainer').innerHTML = '';
+            });
+        });
 
         if (sessionStorage.getItem('admin_logged_in') === 'true') showDashboard();
     </script>
