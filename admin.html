@@ -15,19 +15,27 @@
             --success: #10b981;
             --danger: #ef4444;
             --border: #334155;
+            --warning: #f59e0b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); padding: 30px 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
         h1 { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
         
+        /* Dashboard Analytics Grid */
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .analytic-card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .analytic-info h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+        .analytic-info p { font-size: 1.8rem; font-weight: 800; color: white; }
+        .analytic-icon { font-size: 2.2rem; opacity: 0.8; }
+
         .grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
         @media(max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
-        .card { background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 25px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 25px; position: relative; }
         .card h2 { font-size: 1.3rem; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         
         .form-group { margin-bottom: 15px; }
@@ -58,7 +66,6 @@
         .badge-sch { background: #92400e; color: #fbbf24; }
         .badge-drf { background: #1e293b; color: #94a3b8; }
         
-        /* BOX UTK FITUR RILIS MASSAL */
         .bulk-box { background: #0284c71a; border: 1px dashed var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .hidden { display: none !important; }
 
@@ -83,7 +90,30 @@
             </div>
         </header>
 
-        <!-- PENGUMUMAN DINDING KENDALI -->
+        <div class="analytics-grid">
+            <div class="analytic-card">
+                <div class="analytic-info">
+                    <h3>Total Novel</h3>
+                    <p id="statTotalNovels">0</p>
+                </div>
+                <div class="analytic-icon" style="color: var(--accent);">📚</div>
+            </div>
+            <div class="analytic-card">
+                <div class="analytic-info">
+                    <h3>Total Bab Keseluruhan</h3>
+                    <p id="statTotalChapters">0</p>
+                </div>
+                <div class="analytic-icon" style="color: var(--success);">📖</div>
+            </div>
+            <div class="analytic-card">
+                <div class="analytic-info">
+                    <h3>Total Pembaca (Views)</h3>
+                    <p id="statTotalViews">0</p>
+                </div>
+                <div class="analytic-icon" style="color: var(--warning);">👁️</div>
+            </div>
+        </div>
+
         <div class="card">
             <h2>📢 Running Text Pengumuman Global</h2>
             <div style="display:flex; gap:15px; align-items: flex-end;">
@@ -96,7 +126,6 @@
         </div>
 
         <div class="grid">
-            <!-- KOLOM KIRI -->
             <div>
                 <div class="card">
                     <h2>📚 Tambah Novel Baru</h2>
@@ -144,13 +173,14 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN -->
             <div id="chapterManagerSection" class="hidden">
                 <div class="card">
-                    <h2>🎯 Mengelola Novel: <span id="selectedNovelTitle" style="color:var(--accent);"></span></h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 20px; padding-bottom: 10px;">
+                        <h2 style="border:none; margin:0; padding:0;">🎯 Mengelola Novel: <span id="selectedNovelTitle" style="color:var(--accent);"></span></h2>
+                        <button class="btn btn-secondary btn-small" onclick="closeChapterManager()" style="padding: 6px 12px; font-size: 0.85rem;">✕ Tutup Kelola</button>
+                    </div>
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-top:-15px; margin-bottom:20px;">ID Novel: <span id="selectedNovelId"></span></p>
                     
-                    <!-- FITUR BARU: RILIS SEKALIGUS -->
                     <div class="bulk-box">
                         <div>
                             <p style="font-weight:700; font-size:0.9rem; color:white;">⚡ Fitur Rilis Sekaligus (Bulk Release)</p>
@@ -165,9 +195,11 @@
                     <div id="chaptersListContainer"></div>
                 </div>
 
-                <!-- KARTU INPUT/EDIT BAB (DIARAHKAN OTOMATIS OLEH SCROLL) -->
                 <div id="chapterEditorCard" class="card hidden">
-                    <h2 id="editorCardTitle">📝 Menulis Bab Baru</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 20px; padding-bottom: 10px;">
+                        <h2 id="editorCardTitle" style="border:none; margin:0; padding:0;">📝 Menulis Bab Baru</h2>
+                        <button class="btn btn-secondary btn-small" onclick="closeEditorCard()">✕ Tutup</button>
+                    </div>
                     
                     <div class="form-group">
                         <label>Judul Bab</label>
@@ -211,7 +243,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Konfigurasi Database Anda
         const firebaseConfig = {
             apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
             authDomain: "ceritakuw17.firebaseapp.com",
@@ -241,9 +272,34 @@
                 globalLibrary = snapshot.val() || {};
                 renderNovelsList();
                 populateRelationTargets();
+                calculateAndRenderAnalytics();
                 if(activeNovelId) selectNovel(activeNovelId);
             });
         });
+
+        // HITUNG DAN TAMPILKAN ANALYTICS
+        function calculateAndRenderAnalytics() {
+            let totalNovels = Object.keys(globalLibrary).length;
+            let totalChapters = 0;
+            let totalViews = 0;
+
+            Object.keys(globalLibrary).forEach(key => {
+                const novel = globalLibrary[key];
+                if (novel.views) totalViews += parseInt(novel.views) || 0;
+                
+                if (novel.chapters) {
+                    if (Array.isArray(novel.chapters)) {
+                        totalChapters += novel.chapters.filter(Boolean).length;
+                    } else {
+                        totalChapters += Object.keys(novel.chapters).length;
+                    }
+                }
+            });
+
+            document.getElementById('statTotalNovels').innerText = totalNovels;
+            document.getElementById('statTotalChapters').innerText = totalChapters;
+            document.getElementById('statTotalViews').innerText = totalViews.toLocaleString('id-ID');
+        }
 
         window.saveAnnouncement = function() {
             const txt = document.getElementById('globalAnnouncementInput').value;
@@ -368,29 +424,47 @@
             });
         };
 
-        // ==========================================
-        // AMANDEMEN: FITUR MASSAL (BULK RELEASE)
-        // ==========================================
+        // FUNGSI UNTUK MENUTUP SEKSI KELOLA BAB
+        window.closeChapterManager = function() {
+            activeNovelId = null;
+            document.getElementById('chapterManagerSection').classList.add('hidden');
+            closeEditorCard();
+            renderNovelsList();
+        };
+
         window.bulkReleaseChapters = function() {
             const n = globalLibrary[activeNovelId];
-            if (!n || !n.chapters) { alert("Tidak ada bab untuk dirilis."); return; }
+            if (!n || !n.chapters) { 
+                alert("Tidak ada bab untuk dirilis."); 
+                return; 
+            }
 
             if(confirm("Apakah Anda yakin ingin menerbitkan (Publish) SEMUA bab yang berstatus Draft maupun Scheduled secara sekaligus?")) {
-                let updates = {};
-                
-                if (Array.isArray(n.chapters)) {
-                    n.chapters.forEach((ch, idx) => {
-                        if (ch) updates[`library/${activeNovelId}/chapters/${idx}/status`] = "Published";
+                let chaptersCopy = JSON.parse(JSON.stringify(n.chapters));
+
+                if (Array.isArray(chaptersCopy)) {
+                    chaptersCopy.forEach((ch) => {
+                        if (ch) {
+                            ch.status = "Published";
+                            ch.publishDate = ""; 
+                        }
                     });
                 } else {
-                    Object.keys(n.chapters).forEach(k => {
-                        updates[`library/${activeNovelId}/chapters/${k}/status`] = "Published";
+                    Object.keys(chaptersCopy).forEach(k => {
+                        if (chaptersCopy[k]) {
+                            chaptersCopy[k].status = "Published";
+                            chaptersCopy[k].publishDate = ""; 
+                        }
                     });
                 }
 
-                set(ref(db), { ...globalLibrary, ...updates }).then(() => {
-                    alert("⚡ Sukses! Semua bab kini telah diterbitkan secara massal.");
-                });
+                set(ref(db, `library/${activeNovelId}/chapters`), chaptersCopy)
+                    .then(() => {
+                        alert("⚡ Sukses! Semua bab pada novel ini kini telah dipublikasikan secara massal.");
+                    })
+                    .catch(err => {
+                        alert("Gagal melakukan rilis sekaligus: " + err.message);
+                    });
             }
         };
 
@@ -439,15 +513,10 @@
             focusAndOpenEditor();
         };
 
-        // AMANDEMEN: Buka kartu dan langsung Scroll Otomatis ke Editor Card
         function focusAndOpenEditor() {
             const card = document.getElementById('chapterEditorCard');
             card.classList.remove('hidden');
-            
-            // Efek scroll mulus ke arah editor
             card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-            // Tambahkan animasi denyut agar admin tahu area yang sedang aktif
             card.classList.add('scroll-highlight');
             setTimeout(() => card.classList.remove('scroll-highlight'), 2000);
         }
