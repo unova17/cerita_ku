@@ -203,16 +203,17 @@
         import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // ==========================================
-        // CONFIG FIREBASE (SAMA DENGAN INDEX.HTML)
+        // CONFIG FIREBASE (PERBAIKAN VARIABEL DEKLARASI)
         // ==========================================
-        apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
-    authDomain: "ceritakuw17.firebaseapp.com",
-    databaseURL: "https://ceritakuw17-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "ceritakuw17",
-    storageBucket: "ceritakuw17.firebasestorage.app",
-    messagingSenderId: "523139592598",
-    appId: "1:523139592598:web:521645fc4e0e6367baedb7",
-    measurementId: "G-BY7JJH5YLL"
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
+            authDomain: "ceritakuw17.firebaseapp.com",
+            databaseURL: "https://ceritakuw17-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ceritakuw17",
+            storageBucket: "ceritakuw17.firebasestorage.app",
+            messagingSenderId: "523139592598",
+            appId: "1:523139592598:web:521645fc4e0e6367baedb7",
+            measurementId: "G-BY7JJH5YLL"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -225,19 +226,41 @@
         // Inisialisasi awal Login & Logouts
         document.getElementById('loginBtn').addEventListener('click', () => {
             if(document.getElementById('adminPassword').value === "admin123") {
-                sessionStorage.setItem('admin_logged_in', 'true'); showDashboard();
-            } else { document.getElementById('loginError').classList.remove('hidden'); }
+                sessionStorage.setItem('admin_logged_in', 'true'); 
+                showDashboard();
+            } else { 
+                document.getElementById('loginError').classList.remove('hidden'); 
+            }
         });
-        document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('admin_logged_in'); location.reload(); });
+        document.getElementById('logoutBtn').addEventListener('click', () => { 
+            sessionStorage.removeItem('admin_logged_in'); 
+            location.reload(); 
+        });
 
         document.getElementById('coverUpload').addEventListener('change', (e) => {
-            const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload=()=>uploadedCoverBase64=r.result; r.readAsDataURL(f); }
+            const f = e.target.files[0]; 
+            if(f) { 
+                const r = new FileReader(); 
+                r.onload = () => uploadedCoverBase64 = r.result; 
+                r.readAsDataURL(f); 
+            }
         });
         document.getElementById('editNovelCoverUpload').addEventListener('change', (e) => {
-            const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload=()=>{ document.getElementById('editNovelCoverBase64').value=r.result; document.getElementById('editNovelCoverPreview').src=r.result; }; r.readAsDataURL(f); }
+            const f = e.target.files[0]; 
+            if(f) { 
+                const r = new FileReader(); 
+                r.onload = () => { 
+                    document.getElementById('editNovelCoverBase64').value = r.result; 
+                    document.getElementById('editNovelCoverPreview').src = r.result; 
+                }; 
+                r.readAsDataURL(f); 
+            }
         });
 
-        document.getElementById('closeEditMenuBtn').addEventListener('click', () => { selectedNovelIdForEdit=null; document.getElementById('editChaptersSection').classList.add('hidden'); });
+        document.getElementById('closeEditMenuBtn').addEventListener('click', () => { 
+            selectedNovelIdForEdit = null; 
+            document.getElementById('editChaptersSection').classList.add('hidden'); 
+        });
         document.getElementById('saveMainInfoBtn').addEventListener('click', saveNovelMainInfo);
         document.getElementById('saveChapterBtn').addEventListener('click', saveChapterChanges);
         document.getElementById('cancelChapterBtn').addEventListener('click', () => document.getElementById('specificChapterEditForm').classList.add('hidden'));
@@ -247,7 +270,7 @@
         document.getElementById('addTextBlockNewBtn').addEventListener('click', () => addBlockToContainer('newChapBlocksContainer', 'text'));
         document.getElementById('addImgBlockNewBtn').addEventListener('click', () => addBlockToContainer('newChapBlocksContainer', 'image'));
 
-        // PERBAIKAN UTAMA: Handler form pembuatan novel baru yang gagal kirim
+        // HANDLER FORM PEMBUATAN NOVEL BARU
         document.getElementById('novelForm').addEventListener('submit', (e) => {
             e.preventDefault();
             try {
@@ -335,30 +358,50 @@
         function addBlockToContainer(containerId, type, initialValue = "") {
             const container = document.getElementById(containerId);
             const div = document.createElement('div');
-            div.className = 'content-block-item'; div.setAttribute('data-type', type);
+            div.className = 'content-block-item'; 
+            div.setAttribute('data-type', type);
             if (type === 'text') {
                 div.innerHTML = `<textarea class="block-text-value" style="height: 80px;" required>${initialValue}</textarea>
                 <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px; width:auto;">X</button>`;
             } else {
                 div.innerHTML = `<input type="file" accept="image/*" class="img-file-input" ${initialValue ? '' : 'required'}><input type="hidden" class="block-image-value" value="${initialValue}">
                 <img src="${initialValue}" class="${initialValue ? '' : 'hidden'}" style="max-height: 80px; margin-top:5px; display:block;"><button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px; width:auto;">X</button>`;
-                const fi = div.querySelector('.img-file-input'); const hi = div.querySelector('.block-image-value'); const pr = div.querySelector('img');
-                fi.addEventListener('change', (ev) => { const file = ev.target.files[0]; if (file) { const r = new FileReader(); r.onload = (e) => { pr.src = e.target.result; pr.classList.remove('hidden'); hi.value = e.target.result; }; r.readAsDataURL(file); } });
+                const fi = div.querySelector('.img-file-input'); 
+                const hi = div.querySelector('.block-image-value'); 
+                const pr = div.querySelector('img');
+                fi.addEventListener('change', (ev) => { 
+                    const file = ev.target.files[0]; 
+                    if (file) { 
+                        const r = new FileReader(); 
+                        r.onload = (e) => { 
+                            pr.src = e.target.result; 
+                            pr.classList.remove('hidden'); 
+                            hi.value = e.target.result; 
+                        }; 
+                        r.readAsDataURL(file); 
+                    } 
+                });
             }
             div.querySelector('.delete-btn').addEventListener('click', () => div.remove());
             container.appendChild(div);
         }
 
         function renderNovelList() {
-            const c = document.getElementById('novelListContainer'); c.innerHTML = '';
+            const c = document.getElementById('novelListContainer'); 
+            c.innerHTML = '';
             Object.keys(globalCloudLibrary).forEach(key => {
                 const n = globalCloudLibrary[key];
-                const div = document.createElement('div'); div.className = 'novel-item' + (selectedNovelIdForEdit === key ? ' active' : '');
+                const div = document.createElement('div'); 
+                div.className = 'novel-item' + (selectedNovelIdForEdit === key ? ' active' : '');
                 div.innerHTML = `<div><b>📘 ${n.title} [${n.status || 'On Going'}]</b><p>Penulis: ${n.author}</p></div>
                 <div class="action-btns"><button class="edit-btn" id="mng_${key}">Kelola</button><button class="delete-btn" id="del_${key}">Hapus</button></div>`;
                 c.appendChild(div);
                 document.getElementById(`mng_${key}`).addEventListener('click', () => openEditMenu(key));
-                document.getElementById(`del_${key}`).addEventListener('click', () => { if(confirm("Hapus novel?")) remove(ref(db, `library/${key}`)); });
+                document.getElementById(`del_${key}`).addEventListener('click', () => { 
+                    if(confirm("Apakah Anda yakin ingin menghapus novel ini?")) {
+                        remove(ref(db, `library/${key}`)); 
+                    }
+                });
             });
         }
 
@@ -378,20 +421,26 @@
         }
 
         function saveNovelMainInfo() {
+            if(!selectedNovelIdForEdit) return;
             const n = globalCloudLibrary[selectedNovelIdForEdit];
-            n.title = document.getElementById('editNovelTitleInput').value;
-            n.author = document.getElementById('editNovelAuthorInput').value;
+            n.title = document.getElementById('editNovelTitleInput').value.trim();
+            n.author = document.getElementById('editNovelAuthorInput').value.trim();
             n.status = document.getElementById('editNovelStatusSelect').value;
             n.relationType = document.getElementById('editNovelRelationTypeSelect').value;
             n.relationTargetId = document.getElementById('editNovelRelationTargetSelect').value;
             n.coverUrl = document.getElementById('editNovelCoverBase64').value;
-            set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => alert("Informasi utama novel berhasil diperbarui!"));
+            
+            set(ref(db, `library/${selectedNovelIdForEdit}`), n)
+                .then(() => alert("Informasi utama novel berhasil diperbarui!"))
+                .catch(err => alert("Gagal memperbarui info novel: " + err.message));
         }
 
         function renderCurrentChapters(n) {
-            const list = document.getElementById('currentChaptersList'); list.innerHTML = '';
+            const list = document.getElementById('currentChaptersList'); 
+            list.innerHTML = '';
             (n.chapters || []).forEach((ch, idx) => {
-                const div = document.createElement('div'); div.style = "background:#fff; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; width:100%;";
+                const div = document.createElement('div'); 
+                div.style = "background:#fff; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; width:100%;";
                 div.innerHTML = `<span><b>Bab ${idx+1}:</b> ${ch.title}</span><div class="action-btns"><button class="edit-btn" id="ch_ed_${idx}">Edit &amp; Komentar</button></div>`;
                 list.appendChild(div);
                 document.getElementById(`ch_ed_${idx}`).addEventListener('click', () => openSpecificChapterEditField(idx));
@@ -403,37 +452,56 @@
             document.getElementById('specificChapterEditForm').classList.remove('hidden');
             document.getElementById('editTargetChapIndex').value = idx;
             document.getElementById('editTargetChapTitle').value = ch.title;
-            const bCont = document.getElementById('editBlocksContainer'); bCont.innerHTML = '';
+            const bCont = document.getElementById('editBlocksContainer'); 
+            bCont.innerHTML = '';
             (ch.blocks || []).forEach((b) => addBlockToContainer('editBlocksContainer', b.type, b.value));
 
-            const commentArea = document.getElementById('adminCommentsReviewList'); commentArea.innerHTML = '';
-            if(!ch.comments) { commentArea.innerHTML = `<p style="color:#666; font-size:0.85rem;">Belum ada komentar.</p>`; return; }
+            const commentArea = document.getElementById('adminCommentsReviewList'); 
+            commentArea.innerHTML = '';
+            if(!ch.comments) { 
+                commentArea.innerHTML = `<p style="color:#666; font-size:0.85rem;">Belum ada komentar.</p>`; 
+                return; 
+            }
             Object.keys(ch.comments).forEach(cKey => {
-                const com = ch.comments[cKey]; const card = document.createElement('div'); card.className = 'admin-comment-card';
+                const com = ch.comments[cKey]; 
+                const card = document.createElement('div'); 
+                card.className = 'admin-comment-card';
                 card.innerHTML = `<div><b>👤 ${com.name}</b> <span style="color:#666; font-size:0.75rem;">(${com.date})</span></div><div style="margin:4px 0;">"${com.text}"</div>
                 <div style="font-size:0.8rem; color:#16a34a; font-weight:bold;">${com.reply ? '✓ Dibalas: ' + com.reply : '⚠️ Menunggu Balasan'}</div>
                 <div class="admin-reply-box"><input type="text" id="reply_input_${cKey}" value="${com.reply || ''}"><button type="button" id="reply_btn_${cKey}">Balas</button></div>`;
                 commentArea.appendChild(card);
                 document.getElementById(`reply_btn_${cKey}`).addEventListener('click', () => {
-                    const rTxt = document.getElementById(`reply_input_${cKey}`).value.trim(); if(!rTxt) return;
-                    set(ref(db, `library/${selectedNovelIdForEdit}/chapters/${idx}/comments/${cKey}/reply`), rTxt).then(() => alert("Balasan dikirim!"));
+                    const rTxt = document.getElementById(`reply_input_${cKey}`).value.trim(); 
+                    if(!rTxt) return;
+                    set(ref(db, `library/${selectedNovelIdForEdit}/chapters/${idx}/comments/${cKey}/reply`), rTxt)
+                        .then(() => alert("Balasan dikirim!"));
                 });
             });
         }
 
         function saveChapterChanges() {
-            const idx = document.getElementById('editTargetChapIndex').value; const n = globalCloudLibrary[selectedNovelIdForEdit];
-            n.chapters[idx].title = document.getElementById('editTargetChapTitle').value;
-            const bItems = document.querySelectorAll('#editBlocksContainer .content-block-item'); const blocks = [];
+            const idx = document.getElementById('editTargetChapIndex').value; 
+            const n = globalCloudLibrary[selectedNovelIdForEdit];
+            n.chapters[idx].title = document.getElementById('editTargetChapTitle').value.trim();
+            
+            const bItems = document.querySelectorAll('#editBlocksContainer .content-block-item'); 
+            const blocks = [];
             bItems.forEach(b => {
-                const type = b.getAttribute('data-type'); const val = type === 'text' ? b.querySelector('.block-text-value').value : b.querySelector('.block-image-value').value;
+                const type = b.getAttribute('data-type'); 
+                const val = type === 'text' ? b.querySelector('.block-text-value').value : b.querySelector('.block-image-value').value;
                 blocks.push({type, value: val});
             });
             n.chapters[idx].blocks = blocks;
-            set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => { alert("Bab diperbarui!"); document.getElementById('specificChapterEditForm').classList.add('hidden'); });
+            
+            set(ref(db, `library/${selectedNovelIdForEdit}`), n)
+                .then(() => { 
+                    alert("Bab diperbarui!"); 
+                    document.getElementById('specificChapterEditForm').classList.add('hidden'); 
+                })
+                .catch(err => alert("Gagal memperbarui Bab: " + err.message));
         }
 
-        // Jalankan Handler Tambah Bab Cepat (Di dalam panel kelola)
+        // HANDLER TAMBAH BAB CEPAT
         document.getElementById('addChapterForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const idx = selectedNovelIdForEdit;
