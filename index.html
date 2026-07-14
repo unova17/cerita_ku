@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksi Novel Digital - Halaman Pembaca V6</title>
+    <title>Koleksi Novel Digital - Halaman Pembaca V8</title>
     <style>
         :root {
             --bg-color: #f7f4eb;
@@ -11,12 +11,16 @@
             --panel-bg: #ffffff;
             --accent-color: #8c6239;
             --border-color: #e2d9c8;
+            
+            /* Warna Status */
+            --status-ongoing: #2563eb;
+            --status-hiatus: #d97706;
+            --status-drop: #dc2626;
+            --status-completed: #16a34a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Georgia', serif; }
-
         body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; line-height: 1.8; }
-
         .container { max-width: 800px; margin: 0 auto; }
 
         header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
@@ -24,12 +28,23 @@
 
         .novel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-bottom: 40px; }
         
-        .novel-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .novel-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; }
         .novel-card:hover { transform: translateY(-5px); }
         .novel-card img { width: 100%; height: 280px; object-fit: cover; background: #e5e5e5; }
         .novel-card-info { padding: 15px; }
         .novel-card-info h3 { font-size: 1.1rem; margin-bottom: 5px; color: #111; }
         .novel-card-info p { font-size: 0.85rem; color: #666; font-style: italic; }
+
+        /* BADGE STATUS NOVEL */
+        .status-badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 20px; color: white; font-size: 0.75rem; font-weight: bold; font-family: sans-serif; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .status-ongoing { background-color: var(--status-ongoing); }
+        .status-hiatus { background-color: var(--status-hiatus); }
+        .status-drop { background-color: var(--status-drop); }
+        .status-completed { background-color: var(--status-completed); }
+
+        /* BLOK SERI / RELASI NOVEL */
+        .series-info { background: #f0ebe1; padding: 10px 15px; border-radius: 6px; font-size: 0.85rem; font-family: sans-serif; margin-bottom: 20px; border-left: 4px solid var(--accent-color); color: #555; }
+        .series-info b { color: #222; }
 
         .reader-section { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .back-btn { background: var(--accent-color); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; margin-bottom: 20px; font-family: sans-serif; }
@@ -40,18 +55,19 @@
         .content-area img { max-width: 100%; display: block; margin: 30px auto; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
         /* AREA KOMENTAR */
-        .comment-section { margin-top: 50px; padding-top: 30px; border-top: 2px dashed var(--border-color); font-family: sans-serif; }
-        .comment-section h3 { margin-bottom: 20px; color: var(--accent-color); }
+        .comment-section { margin-top: 50px; padding-top: 30px; border-top: 3px double var(--border-color); font-family: sans-serif; }
+        .comment-section h3 { margin-bottom: 20px; color: var(--accent-color); font-family: sans-serif; }
         
-        .comment-form input, .comment-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; font-family: sans-serif; }
-        .comment-form button { background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .comment-form { background: #fdfbf7; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 25px; }
+        .comment-form input, .comment-form textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; font-family: sans-serif; background: #fff; }
+        .comment-form button { background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: sans-serif; width: 100%; }
+
+        .comments-list { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .comment-item { background: #ffffff; border: 1px solid #e8e2d5; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .comment-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: #777; margin-bottom: 8px; font-weight: bold; }
+        .comment-body { font-size: 0.95rem; color: #333; line-height: 1.5; }
         
-        .comments-list { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
-        .comment-item { background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; }
-        .comment-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; margin-bottom: 8px; font-weight: bold; }
-        .comment-body { font-size: 0.95rem; color: #333; }
-        
-        .admin-reply { background: #f0fdf4; border-left: 4px solid #10b981; margin-top: 10px; padding: 10px 15px; border-radius: 0 8px 8px 0; }
+        .admin-reply { background: #f0fdf4; border-left: 4px solid #10b981; margin-top: 12px; padding: 12px 15px; border-radius: 0 8px 8px 0; }
         .admin-reply-header { font-size: 0.8rem; color: #15803d; font-weight: bold; margin-bottom: 4px; }
         
         .hidden { display: none !important; }
@@ -60,37 +76,40 @@
 <body>
 
     <div class="container">
-        <!-- SEKSI PERPUSTAKAAN UTAMA -->
         <div id="libraryView">
             <header>
-                <h1>Koleksi Novel Kita</h1>
-                <p>Silakan pilih novel gratis terbaik di bawah ini untuk mulai membaca</p>
+                <h1>📚 Koleksi Novel Kita</h1>
+                <p>Silakan pilih novel untuk mulai membaca</p>
             </header>
             <div class="novel-grid" id="novelGridContainer"></div>
         </div>
 
-        <!-- SEKSI BACA CERITA & KOMENTAR -->
         <div id="readerView" class="hidden">
             <button class="back-btn" id="backToLibBtn">⬅ Kembali ke Rak Buku</button>
             <div class="reader-section">
-                <h2 id="readerNovelTitle" style="margin-bottom: 5px; color: var(--accent-color);">Judul Novel</h2>
-                <p id="readerNovelAuthor" style="font-size:0.9rem; color:#666; margin-bottom:20px; font-style:italic;">Penulis</p>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h2 id="readerNovelTitle" style="margin-bottom: 5px; color: var(--accent-color);">Judul Novel</h2>
+                        <p id="readerNovelAuthor" style="font-size:0.9rem; color:#666; margin-bottom:15px; font-style:italic;">Penulis</p>
+                    </div>
+                    <span id="readerNovelStatusBadge" style="padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.8rem; font-weight: bold; font-family: sans-serif;">STATUS</span>
+                </div>
+                
+                <div id="readerSeriesBlock" class="series-info hidden"></div>
                 
                 <select id="chapterSelect" class="chapter-selector"></select>
                 
-                <h3 id="readerChapterTitle" style="margin-bottom: 25px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">Bab X: ...</h3>
+                <h3 id="readerChapterTitle" style="margin-bottom: 25px; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 10px;">Bab X</h3>
+                
                 <div id="chapterContent" class="content-area"></div>
 
-                <!-- FORM & LIST KOMENTAR PER BAB -->
                 <div class="comment-section">
-                    <h3>💬 Diskusi Bab (<span id="commentCount">0</span>)</h3>
-                    
+                    <h3>💬 Kolom Komentar (<span id="commentCount">0</span>)</h3>
                     <div class="comment-form">
-                        <input type="text" id="commentorName" placeholder="Nama Anda..." required>
-                        <textarea id="commentorText" rows="3" placeholder="Tulis komentar/opini Anda tentang bab ini..." required></textarea>
-                        <button id="submitCommentBtn">Kirim Komentar</button>
+                        <input type="text" id="commentorName" placeholder="Masukkan nama Anda..." required>
+                        <textarea id="commentorText" rows="3" placeholder="Bagikan tanggapan Anda mengenai bab ini..." required></textarea>
+                        <button id="submitCommentBtn">Kirim Komentar Saya</button>
                     </div>
-
                     <div class="comments-list" id="commentsContainer"></div>
                 </div>
             </div>
@@ -101,15 +120,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIG FIREBASE (GANTI DENGAN PUNYA ANDA!)
         const firebaseConfig = {
-  apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
-  authDomain: "ceritakuw17.firebaseapp.com",
-  databaseURL: "https://ceritakuw17-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ceritakuw17",
-  storageBucket: "ceritakuw17.firebasestorage.app",
-  messagingSenderId: "523139592598",
-  appId: "1:523139592598:web:521645fc4e0e6367baedb7"
+          apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
+          authDomain: "novel-kita.firebaseapp.com",
+          databaseURL: "https://novel-kita-default-rtdb.firebaseio.com",
+          projectId: "novel-kita",
+          storageBucket: "novel-kita.appspot.com",
         };
 
         const app = initializeApp(firebaseConfig);
@@ -126,14 +142,20 @@
         });
         document.getElementById('submitCommentBtn').addEventListener('click', postComment);
 
-        // Fetch Cloud Data secara realtime
         onValue(ref(db, 'library/'), (snapshot) => {
             activeLibraryData = snapshot.val() || {};
             renderLibrary();
-            if(selectedNovelId) {
-                loadChapterContents(); // Update otomatis jika ada bab atau komentar baru masuk
-            }
+            if(selectedNovelId) { loadChapterContents(); }
         });
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Hiatus': return 'status-hiatus';
+                case 'Drop': return 'status-drop';
+                case 'Completed': return 'status-completed';
+                default: return 'status-ongoing';
+            }
+        }
 
         function renderLibrary() {
             const grid = document.getElementById('novelGridContainer');
@@ -141,10 +163,14 @@
             
             Object.keys(activeLibraryData).forEach(key => {
                 const n = activeLibraryData[key];
+                const statusStr = n.status || 'On Going';
+                const statusClass = getStatusClass(statusStr);
+
                 const card = document.createElement('div');
                 card.className = 'novel-card';
                 card.onclick = () => openReader(key);
                 card.innerHTML = `
+                    <span class="status-badge ${statusClass}">${statusStr}</span>
                     <img src="${n.coverUrl || 'https://via.placeholder.com/220x280?text=No+Cover'}" alt="Cover">
                     <div class="novel-card-info">
                         <h3>${n.title}</h3>
@@ -164,6 +190,28 @@
             const novel = activeLibraryData[novelId];
             document.getElementById('readerNovelTitle').innerText = novel.title;
             document.getElementById('readerNovelAuthor').innerText = `Karya: ${novel.author}`;
+            
+            // Set Badge Status Halaman Dalam
+            const statusStr = novel.status || 'On Going';
+            const badge = document.getElementById('readerNovelStatusBadge');
+            badge.innerText = statusStr;
+            badge.className = ''; 
+            badge.classList.add(getStatusClass(statusStr));
+
+            // Render Info Hubungan Seri (Chain Block)
+            const seriesBlock = document.getElementById('readerSeriesBlock');
+            const relationType = novel.relationType || 'Standalone';
+            
+            if (relationType !== 'Standalone' && novel.relationTargetId && activeLibraryData[novel.relationTargetId]) {
+                const targetTitle = activeLibraryData[novel.relationTargetId].title;
+                seriesBlock.innerHTML = `🔗 Novel ini merupakan <b>${relationType}</b> dari novel: <span style="text-decoration:underline; cursor:pointer;" id="jumpToTarget">${targetTitle}</span>`;
+                seriesBlock.classList.remove('hidden');
+                
+                // Fitur interaktif: Pembaca bisa klik judul seri terkait untuk langsung lompat membaca novel tersebut
+                document.getElementById('jumpToTarget').onclick = () => openReader(novel.relationTargetId);
+            } else {
+                seriesBlock.classList.add('hidden');
+            }
             
             const select = document.getElementById('chapterSelect');
             select.innerHTML = '';
@@ -185,61 +233,35 @@
             document.getElementById('readerChapterTitle').innerText = ch.title;
             document.getElementById('chapterSelect').value = selectedChapterIndex;
 
-            // Render Blok Isi Cerita
             const contentDiv = document.getElementById('chapterContent');
             contentDiv.innerHTML = '';
             (ch.blocks || []).forEach(b => {
                 if(b.type === 'text') {
-                    const p = document.createElement('p');
-                    p.innerText = b.value;
-                    contentDiv.appendChild(p);
+                    const p = document.createElement('p'); p.innerText = b.value; contentDiv.appendChild(p);
                 } else {
-                    const img = document.createElement('img');
-                    img.src = b.value;
-                    contentDiv.appendChild(img);
+                    const img = document.createElement('img'); img.src = b.value; contentDiv.appendChild(img);
                 }
             });
 
-            // Sinkronisasi Membaca & Merender Komentar
             renderComments(ch.comments);
         }
 
         function renderComments(commentsData) {
             const container = document.getElementById('commentsContainer');
             container.innerHTML = '';
-            
             if(!commentsData) {
                 document.getElementById('commentCount').innerText = '0';
-                container.innerHTML = `<p style="font-size:0.9rem; color:#888; text-align:center;">Belum ada diskusi di bab ini. Jadilah yang pertama!</p>`;
+                container.innerHTML = `<p style="font-size:0.9rem; color:#888; text-align:center; padding: 20px 0;">Belum ada diskusi di bab ini.</p>`;
                 return;
             }
-
             const keys = Object.keys(commentsData);
             document.getElementById('commentCount').innerText = keys.length;
-
             keys.forEach(key => {
                 const c = commentsData[key];
                 const div = document.createElement('div');
                 div.className = 'comment-item';
-                
-                let replyHTML = '';
-                if(c.reply) {
-                    replyHTML = `
-                        <div class="admin-reply">
-                            <div class="admin-reply-header">✍️ Balasan Admin:</div>
-                            <div class="comment-body">${c.reply}</div>
-                        </div>
-                    `;
-                }
-
-                div.innerHTML = `
-                    <div class="comment-header">
-                        <span>👤 ${c.name}</span>
-                        <span>${c.date || ''}</span>
-                    </div>
-                    <div class="comment-body">${c.text}</div>
-                    ${replyHTML}
-                `;
+                let replyHTML = c.reply ? `<div class="admin-reply"><div class="admin-reply-header">✍️ Balasan Admin:</div><div class="comment-body">${c.reply}</div></div>` : '';
+                div.innerHTML = `<div class="comment-header"><span>👤 ${c.name}</span><span>🗓️ ${c.date || ''}</span></div><div class="comment-body">${c.text}</div>${replyHTML}`;
                 container.appendChild(div);
             });
         }
@@ -247,39 +269,16 @@
         function postComment() {
             const nameInput = document.getElementById('commentorName');
             const textInput = document.getElementById('commentorText');
-            
-            const name = nameInput.value.trim();
-            const text = textInput.value.trim();
-
-            if(!name || !text) {
-                alert("Mohon isi nama dan komentar Anda!");
-                return;
-            }
-
+            const name = nameInput.value.trim(); const text = textInput.value.trim();
+            if(!name || !text) { alert("Mohon isi Nama dan isi Komentar!"); return; }
             const dateStr = new Date().toLocaleDateString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            
-            const newComment = {
-                name: name,
-                text: text,
-                date: dateStr,
-                reply: "" // default kosong untuk dibalas admin nanti
-            };
-
-            // Simpan langsung ke endpoint spesifik bab tersebut di Firebase
-            const commentRef = ref(db, `library/${selectedNovelId}/chapters/${selectedChapterIndex}/comments`);
-            const newCommentPush = push(commentRef);
-            
-            set(newCommentPush, newComment).then(() => {
-                textInput.value = ''; // Reset form input teks saja
-                alert("Komentar berhasil dikirim!");
+            const newComment = { name, text, date: dateStr, reply: "" };
+            set(push(ref(db, `library/${selectedNovelId}/chapters/${selectedChapterIndex}/comments`)), newComment).then(() => {
+                textInput.value = ''; alert("Komentar terkirim!");
             });
         }
 
-        function closeReader() {
-            selectedNovelId = null;
-            document.getElementById('libraryView').classList.remove('hidden');
-            document.getElementById('readerView').classList.add('hidden');
-        }
+        function closeReader() { selectedNovelId = null; document.getElementById('libraryView').classList.remove('hidden'); document.getElementById('readerView').classList.add('hidden'); }
     </script>
 </body>
 </html>

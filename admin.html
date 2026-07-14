@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Dasbor Admin Premium V6 - Moderasi Komentar & Cloud</title>
+    <title>Panel Dasbor Admin Premium V8 - Fitur Status & Seri Chain</title>
     <style>
         :root {
             --bg-color: #f3f4f6;
@@ -39,7 +39,6 @@
         .block-type-selector { display: flex; gap: 10px; margin: 10px 0; }
         .block-type-selector button { margin: 0; font-size: 0.85rem; padding: 8px; }
 
-        /* BOX COMENTARY MODERATION */
         .admin-comment-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
         .admin-reply-box { margin-top: 8px; display: flex; gap: 8px; }
         .admin-reply-box input { margin: 0; padding: 6px; font-size: 0.85rem; }
@@ -48,7 +47,6 @@
 </head>
 <body>
 
-    <!-- AREA LOGIN -->
     <div id="loginArea" class="login-container">
         <h2>Panel Kontrol Admin</h2>
         <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 15px;">Password bawaan: <b>admin123</b></p>
@@ -57,7 +55,6 @@
         <p id="loginError" style="color: var(--danger-color); font-size: 0.9rem; margin-top: 10px;" class="hidden">Password salah!</p>
     </div>
 
-    <!-- UTAMA DASBOR -->
     <div id="dashboardArea" class="dashboard-container hidden">
         <header>
             <div>
@@ -68,59 +65,72 @@
         </header>
 
         <div class="main-layout">
-            <!-- KOLOM KIRI -->
             <div>
                 <div class="list-section">
                     <h3>Daftar Novel Aktif (Firebase Cloud)</h3>
                     <div id="novelListContainer"></div>
                 </div>
 
-                <!-- MENU DETAIL NOVEL & BAB -->
                 <div id="editChaptersSection" class="form-section hidden">
                     <h3 id="editNovelTitleHeader">Manajemen Novel</h3>
                     
-                    <!-- EDIT INFO UTAMA -->
                     <div style="background: #f0fdf4; padding: 20px; border-radius:8px; margin-bottom:20px; border:1px solid #bbf7d0;">
                         <h4 style="font-size:1rem; margin-bottom:12px; color:#166534;">📝 Edit Informasi Utama Novel</h4>
                         <label>Judul Novel:</label><input type="text" id="editNovelTitleInput">
                         <label>Nama Penulis:</label><input type="text" id="editNovelAuthorInput">
+                        
+                        <label>Status Cerita:</label>
+                        <select id="editNovelStatusSelect">
+                            <option value="On Going">On Going (Sedang Berjalan)</option>
+                            <option value="Hiatus">Hiatus (Berhenti Sementara)</option>
+                            <option value="Drop">Drop (Dihentikan Permanen)</option>
+                            <option value="Completed">Completed (Tamat)</option>
+                        </select>
+
+                        <label>Hubungan Seri Novel:</label>
+                        <select id="editNovelRelationTypeSelect">
+                            <option value="Standalone">Standalone (Berdiri Sendiri)</option>
+                            <option value="Sequel">Sequel (Kelanjutan Novel Lain)</option>
+                            <option value="Prequel">Prequel (Kisah Sebelum Novel Lain)</option>
+                        </select>
+
+                        <label>Target Novel Relasi:</label>
+                        <select id="editNovelRelationTargetSelect"></select>
+                        
                         <label>Ganti Gambar Sampul (Cover):</label><input type="file" id="editNovelCoverUpload" accept="image/*">
                         <input type="hidden" id="editNovelCoverBase64">
                         <img id="editNovelCoverPreview" src="" style="max-height: 120px; display:block; border-radius:4px; margin-bottom:10px; object-fit:cover;">
                         <button id="saveMainInfoBtn" style="background:var(--success-color); width:auto; padding:8px 20px;">💾 Simpan Detail Utama</button>
                     </div>
 
-                    <!-- STRUKTUR MANAJEMEN BAB -->
                     <div style="background: #f9fafb; padding: 15px; border-radius:6px; margin-bottom:15px; border:1px solid var(--border-color);">
                         <h4>Daftar Pilihan Seluruh BAB:</h4>
                         <div id="currentChaptersList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
                     </div>
 
-                    <!-- EDIT KONTEN BAB & MODERASI BALASAN KOMENTAR -->
                     <div id="specificChapterEditForm" class="hidden" style="background:#fffbeb; border:1px solid #fcd34d; padding:15px; border-radius:6px; margin-bottom:15px;">
                         <h4 id="specificEditHeader" style="color:#b45309; margin-bottom:10px;">Edit Konten Bab</h4>
                         <input type="hidden" id="editTargetChapIndex">
                         <label><b>Judul Bab:</b></label><input type="text" id="editTargetChapTitle" required>
                         <label><b>Struktur Konten Bab:</b></label>
                         <div id="editBlocksContainer" style="margin-bottom:15px;"></div>
+                        
                         <div class="block-type-selector">
                             <button type="button" id="addTextBlockEditBtn" style="background:#4b5563;">➕ Paragraf Teks</button>
                             <button type="button" id="addImgBlockEditBtn" style="background:#8c6239;">🖼️ Ilustrasi Gambar</button>
                         </div>
 
-                        <!-- MODUL INTERAKSI KOMENTAR DI DALAM BAB -->
                         <div style="background:#fff; border:1px solid #e2e8f0; padding:15px; border-radius:6px; margin-top:20px;">
                             <h4 style="color:#1e293b; margin-bottom:10px;">💬 Balas Komentar Pembaca di Bab Ini</h4>
                             <div id="adminCommentsReviewList"></div>
                         </div>
 
                         <div style="display:flex; gap:10px; margin-top:15px;">
-                            <button id="saveChapterBtn" style="background:var(--success-color);">Save &amp; Publish Perubahan Bab</button>
+                            <button id="saveChapterBtn" style="background:var(--success-color);">Save &amp; Publish</button>
                             <button id="cancelChapterBtn" style="background:#6b7280;">Batal</button>
                         </div>
                     </div>
 
-                    <!-- FUNGSI TAMBAH BAB BARU -->
                     <div style="border-top:2px dashed var(--border-color); padding-top:15px; margin-top:15px;">
                         <form id="addChapterForm">
                             <h4 style="color:var(--accent-color);">✨ Cepat Tambah Bab Baru</h4>
@@ -137,13 +147,32 @@
                     <button id="closeEditMenuBtn" style="background:#4b5563; margin-top: 15px;">Tutup Manajemen Novel</button>
                 </div>
 
-                <!-- FORM BUAT NOVEL BARU -->
                 <div class="form-section">
                     <h3>Buat &amp; Terbitkan Novel Baru</h3>
                     <form id="novelForm">
                         <label>Judul Novel:</label><input type="text" id="title" required>
                         <label>Nama Penulis:</label><input type="text" id="author" required>
+                        
+                        <label>Status Novel Awal:</label>
+                        <select id="status">
+                            <option value="On Going">On Going</option>
+                            <option value="Hiatus">Hiatus</option>
+                            <option value="Drop">Drop</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+
+                        <label>Hubungan Seri Awal:</label>
+                        <select id="relationType">
+                            <option value="Standalone">Standalone (Berdiri Sendiri)</option>
+                            <option value="Sequel">Sequel</option>
+                            <option value="Prequel">Prequel</option>
+                        </select>
+                        
+                        <label>Target Hubungan Novel:</label>
+                        <select id="relationTarget"></select>
+
                         <label>Unggah Gambar Sampul:</label><input type="file" id="coverUpload" accept="image/*">
+                        
                         <div id="createNovelChaptersContainer">
                             <div class="chapter-block-box">
                                 <h4>Form Bab 1</h4>
@@ -160,11 +189,10 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN -->
             <div>
                 <div class="preview-section">
                     <h3>📡 Status Log Feedback</h3>
-                    <p style="font-size:0.9rem;">Gunakan menu kelola bab untuk melihat daftar komentar masuk, menanggapi feedback, ataupun memberikan pengumuman langsung di akhir cerita.</p>
+                    <p style="font-size:0.9rem;">Gunakan menu kelola bab untuk melihat daftar komentar masuk dan menanggapi feedback.</p>
                 </div>
             </div>
         </div>
@@ -174,16 +202,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CONFIG FIREBASE (SAMA DENGAN INDEX.HTML)
         const firebaseConfig = {
-            apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
-  authDomain: "ceritakuw17.firebaseapp.com",
-  databaseURL: "https://ceritakuw17-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ceritakuw17",
-  storageBucket: "ceritakuw17.firebasestorage.app",
-  messagingSenderId: "523139592598",
-  appId: "1:523139592598:web:521645fc4e0e6367baedb7",
-  measurementId: "G-BY7JJH5YLL"
+          apiKey: "AIzaSyAPirxknnoLy0poK0COXOaIfRSQ2MRNt-A",
+          authDomain: "novel-kita.firebaseapp.com",
+          databaseURL: "https://novel-kita-default-rtdb.firebaseio.com",
+          projectId: "novel-kita",
+          storageBucket: "novel-kita.appspot.com",
         };
 
         const app = initializeApp(firebaseConfig);
@@ -195,14 +219,10 @@
 
         document.getElementById('loginBtn').addEventListener('click', () => {
             if(document.getElementById('adminPassword').value === "admin123") {
-                sessionStorage.setItem('admin_logged_in', 'true');
-                showDashboard();
+                sessionStorage.setItem('admin_logged_in', 'true'); showDashboard();
             } else { document.getElementById('loginError').classList.remove('hidden'); }
         });
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            sessionStorage.removeItem('admin_logged_in');
-            location.reload();
-        });
+        document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('admin_logged_in'); location.reload(); });
 
         document.getElementById('coverUpload').addEventListener('change', (e) => {
             const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload=()=>uploadedCoverBase64=r.result; r.readAsDataURL(f); }
@@ -216,28 +236,96 @@
         document.getElementById('saveChapterBtn').addEventListener('click', saveChapterChanges);
         document.getElementById('cancelChapterBtn').addEventListener('click', () => document.getElementById('specificChapterEditForm').classList.add('hidden'));
 
+        document.getElementById('addTextBlockEditBtn').addEventListener('click', () => addBlockToContainer('editBlocksContainer', 'text'));
+        document.getElementById('addImgBlockEditBtn').addEventListener('click', () => addBlockToContainer('editBlocksContainer', 'image'));
+        document.getElementById('addTextBlockNewBtn').addEventListener('click', () => addBlockToContainer('newChapBlocksContainer', 'text'));
+        document.getElementById('addImgBlockNewBtn').addEventListener('click', () => addBlockToContainer('newChapBlocksContainer', 'image'));
+
+        // Handler form pembuatan novel baru
+        document.getElementById('novelForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const status = document.getElementById('status').value;
+            const relationType = document.getElementById('relationType').value;
+            const relationTargetId = document.getElementById('relationTarget').value;
+
+            // Ambil data Bab 1 bawaan
+            const chapTitle = document.querySelector('.create-chap-title').value;
+            const blockVal = document.querySelector('.block-text-value').value;
+
+            const newNovel = {
+                title, author, status, relationType, relationTargetId,
+                coverUrl: uploadedCoverBase64,
+                chapters: [{
+                    title: chapTitle,
+                    blocks: [{ type: 'text', value: blockVal }]
+                }]
+            };
+
+            push(ref(db, 'library/'), newNovel).then(() => {
+                alert("Novel Baru Sukses Diterbitkan!");
+                document.getElementById('novelForm').reset();
+                uploadedCoverBase64 = "";
+            });
+        });
+
         function showDashboard() {
             document.getElementById('loginArea').classList.add('hidden');
             document.getElementById('dashboardArea').classList.remove('hidden');
             onValue(ref(db, 'library/'), (snapshot) => {
                 globalCloudLibrary = snapshot.val() || {};
                 renderNovelList();
+                populateTargetDropdowns(); // Perbarui daftar dropdown target seri otomatis
                 if(selectedNovelIdForEdit && globalCloudLibrary[selectedNovelIdForEdit]) {
                     renderCurrentChapters(globalCloudLibrary[selectedNovelIdForEdit]);
-                    // Auto refresh list komentar jika admin sedang membuka bab tersebut
-                    const activeIndex = document.getElementById('editTargetChapIndex').value;
-                    if(activeIndex !== "") openSpecificChapterEditField(parseInt(activeIndex));
                 }
             });
+        }
+
+        // Isi Pilihan Target Seri berdasarkan novel yang ada di database
+        function populateTargetDropdowns() {
+            const addSelect = document.getElementById('relationTarget');
+            const editSelect = document.getElementById('editNovelRelationTargetSelect');
+            
+            const currentAddVal = addSelect.value;
+            const currentEditVal = editSelect.value;
+
+            let optionsHTML = '<option value="">-- Pilih Novel Target --</option>';
+            Object.keys(globalCloudLibrary).forEach(key => {
+                optionsHTML += `<option value="${key}">${globalCloudLibrary[key].title}</option>`;
+            });
+
+            addSelect.innerHTML = optionsHTML;
+            editSelect.innerHTML = optionsHTML;
+
+            addSelect.value = currentAddVal;
+            editSelect.value = currentEditVal;
+        }
+
+        function addBlockToContainer(containerId, type, initialValue = "") {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'content-block-item'; div.setAttribute('data-type', type);
+            if (type === 'text') {
+                div.innerHTML = `<textarea class="block-text-value" style="height: 80px;" required>${initialValue}</textarea>
+                <button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px; width:auto;">X</button>`;
+            } else {
+                div.innerHTML = `<input type="file" accept="image/*" class="img-file-input" ${initialValue ? '' : 'required'}><input type="hidden" class="block-image-value" value="${initialValue}">
+                <img src="${initialValue}" class="${initialValue ? '' : 'hidden'}" style="max-height: 80px; margin-top:5px; display:block;"><button type="button" class="delete-btn" style="position:absolute; top:5px; right:5px; font-size:0.7rem; padding:2px 6px; width:auto;">X</button>`;
+                const fi = div.querySelector('.img-file-input'); const hi = div.querySelector('.block-image-value'); const pr = div.querySelector('img');
+                fi.addEventListener('change', (ev) => { const file = ev.target.files[0]; if (file) { const r = new FileReader(); r.onload = (e) => { pr.src = e.target.result; pr.classList.remove('hidden'); hi.value = e.target.result; }; r.readAsDataURL(file); } });
+            }
+            div.querySelector('.delete-btn').addEventListener('click', () => div.remove());
+            container.appendChild(div);
         }
 
         function renderNovelList() {
             const c = document.getElementById('novelListContainer'); c.innerHTML = '';
             Object.keys(globalCloudLibrary).forEach(key => {
                 const n = globalCloudLibrary[key];
-                const div = document.createElement('div');
-                div.className = 'novel-item' + (selectedNovelIdForEdit === key ? ' active' : '');
-                div.innerHTML = `<div><b>📘 ${n.title}</b><p>Penulis: ${n.author}</p></div>
+                const div = document.createElement('div'); div.className = 'novel-item' + (selectedNovelIdForEdit === key ? ' active' : '');
+                div.innerHTML = `<div><b>📘 ${n.title} [${n.status || 'On Going'}]</b><p>Penulis: ${n.author}</p></div>
                 <div class="action-btns"><button class="edit-btn" id="mng_${key}">Kelola</button><button class="delete-btn" id="del_${key}">Hapus</button></div>`;
                 c.appendChild(div);
                 document.getElementById(`mng_${key}`).addEventListener('click', () => openEditMenu(key));
@@ -252,6 +340,9 @@
             document.getElementById('editNovelTitleHeader').innerText = `Kelola: ${n.title}`;
             document.getElementById('editNovelTitleInput').value = n.title;
             document.getElementById('editNovelAuthorInput').value = n.author;
+            document.getElementById('editNovelStatusSelect').value = n.status || 'On Going';
+            document.getElementById('editNovelRelationTypeSelect').value = n.relationType || 'Standalone';
+            document.getElementById('editNovelRelationTargetSelect').value = n.relationTargetId || '';
             document.getElementById('editNovelCoverBase64').value = n.coverUrl || '';
             document.getElementById('editNovelCoverPreview').src = n.coverUrl || '';
             renderCurrentChapters(n);
@@ -261,17 +352,18 @@
             const n = globalCloudLibrary[selectedNovelIdForEdit];
             n.title = document.getElementById('editNovelTitleInput').value;
             n.author = document.getElementById('editNovelAuthorInput').value;
+            n.status = document.getElementById('editNovelStatusSelect').value;
+            n.relationType = document.getElementById('editNovelRelationTypeSelect').value;
+            n.relationTargetId = document.getElementById('editNovelRelationTargetSelect').value;
             n.coverUrl = document.getElementById('editNovelCoverBase64').value;
-            set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => alert("Detail novel berhasil diupdate!"));
+            set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => alert("Informasi utama novel berhasil diperbarui!"));
         }
 
         function renderCurrentChapters(n) {
             const list = document.getElementById('currentChaptersList'); list.innerHTML = '';
             (n.chapters || []).forEach((ch, idx) => {
-                const div = document.createElement('div');
-                div.style = "background:#fff; padding:10px; border-radius:6px; display:flex; justify-content:between; align-items:center; width:100%; justify-content: space-between;";
-                div.innerHTML = `<span><b>Bab ${idx+1}:</b> ${ch.title}</span>
-                <div class="action-btns"><button class="edit-btn" id="ch_ed_${idx}">Edit &amp; Komentar</button></div>`;
+                const div = document.createElement('div'); div.style = "background:#fff; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; width:100%;";
+                div.innerHTML = `<span><b>Bab ${idx+1}:</b> ${ch.title}</span><div class="action-btns"><button class="edit-btn" id="ch_ed_${idx}">Edit &amp; Komentar</button></div>`;
                 list.appendChild(div);
                 document.getElementById(`ch_ed_${idx}`).addEventListener('click', () => openSpecificChapterEditField(idx));
             });
@@ -282,70 +374,34 @@
             document.getElementById('specificChapterEditForm').classList.remove('hidden');
             document.getElementById('editTargetChapIndex').value = idx;
             document.getElementById('editTargetChapTitle').value = ch.title;
-            
-            // Render blocks edit (Sederhana untuk keperluan space tutorial)
             const bCont = document.getElementById('editBlocksContainer'); bCont.innerHTML = '';
-            (ch.blocks || []).forEach((b, bIdx) => {
-                const d = document.createElement('div'); d.className='content-block-item'; d.setAttribute('data-type', b.type);
-                if(b.type === 'text') d.innerHTML=`<textarea class="block-text-value" style="width:100%;">${b.value}</textarea>`;
-                else d.innerHTML=`<input type="hidden" class="block-image-value" value="${b.value}"><img src="${b.value}" style="max-height:80px;">`;
-                bCont.appendChild(d);
-            });
+            (ch.blocks || []).forEach((b) => addBlockToContainer('editBlocksContainer', b.type, b.value));
 
-            // MODERASI KOMENTAR KELUAR DI PANEL ADMIN
-            const commentArea = document.getElementById('adminCommentsReviewList');
-            commentArea.innerHTML = '';
-            
-            if(!ch.comments) {
-                commentArea.innerHTML = `<p style="color:#666; font-size:0.85rem;">Belum ada komentar dari pembaca di bab ini.</p>`;
-                return;
-            }
-
+            const commentArea = document.getElementById('adminCommentsReviewList'); commentArea.innerHTML = '';
+            if(!ch.comments) { commentArea.innerHTML = `<p style="color:#666; font-size:0.85rem;">Belum ada komentar.</p>`; return; }
             Object.keys(ch.comments).forEach(cKey => {
-                const com = ch.comments[cKey];
-                const card = document.createElement('div');
-                card.className = 'admin-comment-card';
-                card.innerHTML = `
-                    <div style="font-weight:bold; color:#1e3a8a;">👤 ${com.name} <span style="font-weight:normal; color:#666; font-size:0.75rem;">(${com.date})</span></div>
-                    <div style="margin:4px 0; color:#334155;">"${com.text}"</div>
-                    <div style="font-size:0.8rem; color:#16a34a; font-weight:bold;">${com.reply ? '✓ Sudah Dibalas: ' + com.reply : '⚠️ Menunggu Balasan'}</div>
-                    <div class="admin-reply-box">
-                        <input type="text" id="reply_input_${cKey}" placeholder="Tulis balasan feedback admin..." value="${com.reply || ''}">
-                        <button type="button" id="reply_btn_${cKey}">Kirim Balasan</button>
-                    </div>
-                `;
+                const com = ch.comments[cKey]; const card = document.createElement('div'); card.className = 'admin-comment-card';
+                card.innerHTML = `<div><b>👤 ${com.name}</b> <span style="color:#666; font-size:0.75rem;">(${com.date})</span></div><div style="margin:4px 0;">"${com.text}"</div>
+                <div style="font-size:0.8rem; color:#16a34a; font-weight:bold;">${com.reply ? '✓ Dibalas: ' + com.reply : '⚠️ Menunggu Balasan'}</div>
+                <div class="admin-reply-box"><input type="text" id="reply_input_${cKey}" value="${com.reply || ''}"><button type="button" id="reply_btn_${cKey}">Balas</button></div>`;
                 commentArea.appendChild(card);
-
                 document.getElementById(`reply_btn_${cKey}`).addEventListener('click', () => {
-                    const replyText = document.getElementById(`reply_input_${cKey}`).value.trim();
-                    if(!replyText) return;
-                    
-                    // Simpan balasan langsung ke target komentar ID di Firebase
-                    set(ref(db, `library/${selectedNovelIdForEdit}/chapters/${idx}/comments/${cKey}/reply`), replyText)
-                    .then(() => alert("Balasan Anda berhasil dikirim ke pembaca!"));
+                    const rTxt = document.getElementById(`reply_input_${cKey}`).value.trim(); if(!rTxt) return;
+                    set(ref(db, `library/${selectedNovelIdForEdit}/chapters/${idx}/comments/${cKey}/reply`), rTxt).then(() => alert("Balasan dikirim!"));
                 });
             });
         }
 
         function saveChapterChanges() {
-            const idx = document.getElementById('editTargetChapIndex').value;
-            const n = globalCloudLibrary[selectedNovelIdForEdit];
+            const idx = document.getElementById('editTargetChapIndex').value; const n = globalCloudLibrary[selectedNovelIdForEdit];
             n.chapters[idx].title = document.getElementById('editTargetChapTitle').value;
-            
-            // Simpan perubahan teks blok
-            const bItems = document.querySelectorAll('#editBlocksContainer .content-block-item');
-            const blocks = [];
+            const bItems = document.querySelectorAll('#editBlocksContainer .content-block-item'); const blocks = [];
             bItems.forEach(b => {
-                const type = b.getAttribute('data-type');
-                const val = type === 'text' ? b.querySelector('.block-text-value').value : b.querySelector('.block-image-value').value;
+                const type = b.getAttribute('data-type'); const val = type === 'text' ? b.querySelector('.block-text-value').value : b.querySelector('.block-image-value').value;
                 blocks.push({type, value: val});
             });
             n.chapters[idx].blocks = blocks;
-
-            set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => {
-                alert("Konten bab sukses diperbarui!");
-                document.getElementById('specificChapterEditForm').classList.add('hidden');
-            });
+            set(ref(db, `library/${selectedNovelIdForEdit}`), n).then(() => { alert("Bab diperbarui!"); document.getElementById('specificChapterEditForm').classList.add('hidden'); });
         }
 
         if (sessionStorage.getItem('admin_logged_in') === 'true') showDashboard();
