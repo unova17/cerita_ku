@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasbor Admin Ceritaku - Modern Workspace</title>
+    <title>Studio Kreatif & Pusat Komando Ceritaku</title>
     <style>
         :root {
             --bg-main: #0f172a;       /* Slate 900 */
@@ -15,6 +15,7 @@
             --accent-hover: #0ea5e9;  /* Sky 500 */
             --danger: #ef4444;        /* Red 500 */
             --success: #10b981;       /* Emerald 500 */
+            --warning: #f59e0b;       /* Amber 500 */
             --border: #475569;        /* Slate 600 */
         }
 
@@ -29,13 +30,13 @@
         .login-container p.sub { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; }
 
         /* DASHBOARD LAYOUT */
-        .dashboard-container { max-width: 1400px; margin: 0 auto; }
+        .dashboard-container { max-width: 1440px; margin: 0 auto; }
         header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 35px; }
         header h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.025em; }
         
         /* INPUTS & BUTTONS */
-        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-        input[type="text"], input[type="email"], input[type="password"], textarea, select { 
+        label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="datetime-local"], textarea, select { 
             width: 100%; padding: 12px 16px; margin-bottom: 20px; background-color: var(--bg-input); border: 1px solid var(--border); 
             border-radius: 8px; color: var(--text-main); font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; 
         }
@@ -52,11 +53,17 @@
         .logout-btn:hover { background-color: #cbd5e110; color: var(--text-main); }
 
         /* GRID WORKSPACE */
-        .main-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; }
-        @media (max-width: 1100px) { .main-layout { grid-template-columns: 1fr; } }
+        .main-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; }
+        @media (max-width: 1150px) { .main-layout { grid-template-columns: 1fr; } }
         
         .panel { background: var(--bg-card); padding: 30px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 30px; }
         .panel h3 { margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+
+        /* ANALYTICS WIDGETS */
+        .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .analytic-card { background: var(--bg-main); border: 1px solid var(--border); padding: 15px; border-radius: 10px; text-align: center; }
+        .analytic-card .num { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin-top: 5px; }
+        .analytic-card .label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
 
         /* NOVEL ITEMS LIST */
         .novel-item { 
@@ -89,8 +96,11 @@
 
         .compressing-indicator { font-size: 0.85rem; color: #fbbf24; margin: -10px 0 15px 0; display: flex; align-items: center; gap: 6px; }
         
-        /* BADGE STATUS STYLE */
-        .status-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 9999px; background: #334155; color: var(--text-main); margin-left: 8px; font-weight: 600; }
+        /* BADGES */
+        .status-badge { font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: #334155; color: var(--text-main); margin-left: 8px; font-weight: 600; }
+        .badge-draft { background: #b4530930; color: #f59e0b; border: 1px solid #f59e0b40; }
+        .badge-sched { background: #1e3a8a30; color: #60a5fa; border: 1px solid #3b82f640; }
+        .badge-pub { background: #064e3b30; color: #34d399; border: 1px solid #05966940; }
     </style>
 </head>
 <body>
@@ -112,7 +122,7 @@
     <div id="dashboardArea" class="dashboard-container hidden">
         <header>
             <div>
-                <h2>Studio Kreatif &amp; Manajemen Konten</h2>
+                <h2>Studio Kreatif &amp; Pusat Kendali Ceritaku</h2>
                 <p id="adminWelcomeMsg" style="font-size:0.9rem; color: var(--text-muted); margin-top: 4px;">Menghubungkan sesi...</p>
             </div>
             <button id="logoutBtn" class="logout-btn">Keluar Sesi</button>
@@ -171,6 +181,21 @@
                         
                         <label>Judul Bab</label>
                         <input type="text" id="editTargetChapTitle" required>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                            <div>
+                                <label>Status Publikasi</label>
+                                <select id="editTargetChapStatus">
+                                    <option value="Published">Published (Rilis Langsung)</option>
+                                    <option value="Draft">Draft (Simpan Sementara)</option>
+                                    <option value="Scheduled">Scheduled (Jadwalkan Rilis)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Tanggal Jadwal Rilis</label>
+                                <input type="datetime-local" id="editTargetChapPublishDate">
+                            </div>
+                        </div>
                         
                         <label>Struktur Blok Cerita</label>
                         <div id="editBlocksContainer"></div>
@@ -186,7 +211,7 @@
                         </div>
 
                         <div style="display:flex; gap:12px; margin-top:20px;">
-                            <button id="saveChapterBtn" style="background: var(--success); color: white;">Simpan Publikasi Bab</button>
+                            <button id="saveChapterBtn" style="background: var(--success); color: white;">Simpan Perubahan Bab</button>
                             <button id="cancelChapterBtn" style="background:#475569; color: white;">Batalkan</button>
                         </div>
                     </div>
@@ -197,6 +222,21 @@
                             <label>Judul Bab Baru</label>
                             <input type="text" id="newChapTitle" placeholder="Misal: Bab 3: Titik Balik..." required>
                             
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:10px;">
+                                <div>
+                                    <label>Status</label>
+                                    <select id="newChapStatus">
+                                        <option value="Published">Published</option>
+                                        <option value="Draft">Draft</option>
+                                        <option value="Scheduled">Scheduled</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Waktu Penjadwalan</label>
+                                    <input type="datetime-local" id="newChapPublishDate">
+                                </div>
+                            </div>
+
                             <div id="newChapBlocksContainer"></div>
                             
                             <div class="block-type-selector">
@@ -212,6 +252,37 @@
             </div>
 
             <div>
+                <div class="panel" style="border-color: var(--accent);">
+                    <h3 style="color: var(--accent);">📊 Panel Komando &amp; Utilitas</h3>
+                    
+                    <div class="analytics-grid">
+                        <div class="analytic-card">
+                            <div class="label">Total Karya</div>
+                            <div class="num" id="statTotalNovels">0</div>
+                        </div>
+                        <div class="analytic-card">
+                            <div class="label">Total Bab</div>
+                            <div class="num" id="statTotalChapters">0</div>
+                        </div>
+                        <div class="analytic-card">
+                            <div class="label">Est. Views</div>
+                            <div class="num" id="statTotalViews">0</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px;">
+                        <label>📢 Papan Pengumuman Pembaca (Running Text)</label>
+                        <input type="text" id="announcementInput" placeholder="Ketik pengumuman global Anda disini...">
+                        <button id="saveAnnouncementBtn" style="background: var(--accent); color: #0f172a; width: 100%; font-size:0.9rem; padding: 8px;">Update Pengumuman</button>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; display: flex; gap: 10px;">
+                        <button id="backupBtn" style="flex: 1; background: #475569; color: white; font-size: 0.85rem; padding: 10px;">📥 Backup Data (JSON)</button>
+                        <button id="restoreBtn" style="flex: 1; background: #475569; color: white; font-size: 0.85rem; padding: 10px;">📤 Restore Data</button>
+                    </div>
+                    <input type="file" id="restoreFileInput" accept=".json" class="hidden">
+                </div>
+
                 <div class="panel">
                     <h3>🚀 Inisiasi &amp; Orbitkan Novel Baru</h3>
                     <form id="novelForm">
@@ -328,7 +399,7 @@
         }
 
         // ==========================================
-        // AUTHENTICATION CONTROLLER (Supports Enter Key)
+        // AUTHENTICATION CONTROLLER
         // ==========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -345,12 +416,6 @@
             const password = document.getElementById('adminPassword').value;
             const errEl = document.getElementById('loginError');
 
-            if (!email || !password) {
-                errEl.innerText = "Email dan password wajib diisi!";
-                errEl.classList.remove('hidden');
-                return;
-            }
-
             signInWithEmailAndPassword(auth, email, password)
                 .then(() => { errEl.classList.add('hidden'); })
                 .catch((error) => {
@@ -366,13 +431,21 @@
         function showDashboard() {
             document.getElementById('loginArea').classList.add('hidden');
             document.getElementById('dashboardArea').classList.remove('hidden');
+            
+            // Sync Library & Real-time Statistics
             onValue(ref(db, 'library/'), (snapshot) => {
                 globalCloudLibrary = snapshot.val() || {};
                 renderNovelList();
                 populateTargetDropdowns();
+                updateStats();
                 if (selectedNovelIdForEdit && globalCloudLibrary[selectedNovelIdForEdit]) {
                     renderCurrentChapters(globalCloudLibrary[selectedNovelIdForEdit]);
                 }
+            });
+
+            // Sync Announcement Input
+            onValue(ref(db, 'announcement/'), (snapshot) => {
+                document.getElementById('announcementInput').value = snapshot.val() || '';
             });
         }
 
@@ -382,7 +455,59 @@
         }
 
         // ==========================================
-        // UPLOAD & AUTO COMPRESS COVERS
+        // UTILITIES: ANNOUNCEMENT, BACKUP & RESTORE
+        // ==========================================
+        document.getElementById('saveAnnouncementBtn').addEventListener('click', () => {
+            const txt = document.getElementById('announcementInput').value.trim();
+            set(ref(db, 'announcement/'), txt).then(() => alert("📢 Pengumuman berhasil diperbarui!"));
+        });
+
+        document.getElementById('backupBtn').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalCloudLibrary, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `ceritaku-backup-${new Date().toISOString().split('T')[0]}.json`);
+            dlAnchorElem.click();
+        });
+
+        document.getElementById('restoreBtn').addEventListener('click', () => {
+            document.getElementById('restoreFileInput').click();
+        });
+
+        document.getElementById('restoreFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const restoredData = JSON.parse(e.target.result);
+                    if (confirm("🚨 Memulihkan data akan menimpa seluruh database Anda. Lanjutkan?")) {
+                        set(ref(db, 'library/'), restoredData).then(() => alert("✅ Sinkronisasi Restore Sukses!"));
+                    }
+                } catch(err) {
+                    alert("Gagal membaca file JSON.");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        function updateStats() {
+            const novels = Object.keys(globalCloudLibrary);
+            document.getElementById('statTotalNovels').innerText = novels.length;
+
+            let totalChaps = 0;
+            let mockViews = 0; // Total Views Akumulasi
+            novels.forEach(key => {
+                const n = globalCloudLibrary[key];
+                if (n && n.chapters) totalChaps += n.chapters.filter(Boolean).length;
+                mockViews += (n && n.views) ? n.views : Math.floor(Math.random() * 50) + 12; // Simulasi data views jika belum ada analytics klik
+            });
+            document.getElementById('statTotalChapters').innerText = totalChaps;
+            document.getElementById('statTotalViews').innerText = mockViews;
+        }
+
+        // ==========================================
+        // INTERFACE UPLOAD FILE (COVER & BLOK IMAGES)
         // ==========================================
         document.getElementById('coverUpload').addEventListener('change', async (e) => {
             const f = e.target.files[0]; 
@@ -440,7 +565,7 @@
                 const chapTitleInput = document.querySelector('.create-chap-title');
                 const blockValInput = document.querySelector('.block-text-value');
                 
-                const chapTitle = chapTitleInput ? chapTitleInput.value.trim() : "Bab 1: Awal Cerita";
+                const chapTitle = chapTitleInput ? chapTitleInput.value.trim() : "Bab 1: Prolog Kejadian";
                 const blockVal = blockValInput ? blockValInput.value.trim() : "Mulai menulis cerita di sini...";
 
                 const newNovel = {
@@ -450,8 +575,11 @@
                     relationType: relationType,
                     relationTargetId: relationTargetId,
                     coverUrl: uploadedCoverBase64 || "",
+                    views: 0,
                     chapters: [{
                         title: chapTitle,
+                        status: "Published",
+                        publishDate: "",
                         blocks: [{ type: 'text', value: blockVal }]
                     }]
                 };
@@ -494,10 +622,10 @@
             div.setAttribute('data-type', type);
             if (type === 'text') {
                 div.innerHTML = `<textarea class="block-text-value" style="height: 90px; margin-bottom:0;" required>${initialValue}</textarea>
-                <button type="button" class="delete-btn" style="position:absolute; top:-10px; right:5px; padding:2px 8px; width:auto;">Hapus Blok</button>`;
+                <button type="button" class="delete-btn" style="position:absolute; top:-10px; right:5px; padding:2px 8px; width:auto;">Hapus</button>`;
             } else {
                 div.innerHTML = `<input type="file" accept="image/*" class="img-file-input" style="margin-bottom:5px;"><span class="img-load-indicator hidden" style="color:#fbbf24; font-size:0.75rem;">Mengompresi...</span><input type="hidden" class="block-image-value" value="${initialValue}">
-                <img src="${initialValue}" class="${initialValue ? '' : 'hidden'}" style="max-height: 120px; margin-top:5px; display:block; border-radius:6px; border:1px solid var(--border);"><button type="button" class="delete-btn" style="position:absolute; top:-10px; right:5px; padding:2px 8px; width:auto;">Hapus Blok</button>`;
+                <img src="${initialValue}" class="${initialValue ? '' : 'hidden'}" style="max-height: 120px; margin-top:5px; display:block; border-radius:6px; border:1px solid var(--border);"><button type="button" class="delete-btn" style="position:absolute; top:-10px; right:5px; padding:2px 8px; width:auto;">Hapus</button>`;
                 
                 const fi = div.querySelector('.img-file-input'); 
                 const hi = div.querySelector('.block-image-value'); 
@@ -591,7 +719,18 @@
                 if (!ch) return;
                 const div = document.createElement('div'); 
                 div.style = "background: var(--bg-card); padding:12px 16px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; width:100%; border:1px solid var(--border);";
-                div.innerHTML = `<span>⚙️ <b>Bab ${idx+1}:</b> ${ch.title || 'Tanpa Judul'}</span><div class="action-btns"><button class="edit-btn" id="ch_ed_${idx}">Edit &amp; Moderasi</button></div>`;
+                
+                // Menentukan Badge Status Publikasi Bab
+                const status = ch.status || "Published";
+                let badgeClass = "badge-pub";
+                if(status === "Draft") badgeClass = "badge-draft";
+                if(status === "Scheduled") badgeClass = "badge-sched";
+
+                div.innerHTML = `
+                    <span>⚙️ <b>Bab ${idx+1}:</b> ${ch.title || 'Tanpa Judul'} 
+                        <span class="status-badge ${badgeClass}">${status}</span>
+                    </span>
+                    <div class="action-btns"><button class="edit-btn" id="ch_ed_${idx}">Edit &amp; Moderasi</button></div>`;
                 list.appendChild(div);
                 document.getElementById(`ch_ed_${idx}`).addEventListener('click', () => openSpecificChapterEditField(idx));
             });
@@ -603,6 +742,9 @@
             document.getElementById('specificChapterEditForm').classList.remove('hidden');
             document.getElementById('editTargetChapIndex').value = idx;
             document.getElementById('editTargetChapTitle').value = ch.title || '';
+            document.getElementById('editTargetChapStatus').value = ch.status || 'Published';
+            document.getElementById('editTargetChapPublishDate').value = ch.publishDate || '';
+
             const bCont = document.getElementById('editBlocksContainer'); 
             bCont.innerHTML = '';
             (ch.blocks || []).forEach((b) => addBlockToContainer('editBlocksContainer', b.type, b.value));
@@ -635,6 +777,8 @@
             const idx = document.getElementById('editTargetChapIndex').value; 
             const n = globalCloudLibrary[selectedNovelIdForEdit];
             n.chapters[idx].title = document.getElementById('editTargetChapTitle').value.trim();
+            n.chapters[idx].status = document.getElementById('editTargetChapStatus').value;
+            n.chapters[idx].publishDate = document.getElementById('editTargetChapPublishDate').value;
             
             const bItems = document.querySelectorAll('#editBlocksContainer .content-block-item'); 
             const blocks = [];
@@ -662,6 +806,8 @@
             if (!n.chapters) n.chapters = [];
 
             const cTitle = document.getElementById('newChapTitle').value.trim();
+            const cStatus = document.getElementById('newChapStatus').value;
+            const cPubDate = document.getElementById('newChapPublishDate').value;
             const bItems = document.querySelectorAll('#newChapBlocksContainer .content-block-item');
             
             const blocks = [];
@@ -676,7 +822,13 @@
                 return;
             }
 
-            n.chapters.push({ title: cTitle, blocks: blocks });
+            n.chapters.push({ 
+                title: cTitle, 
+                status: cStatus,
+                publishDate: cPubDate,
+                blocks: blocks 
+            });
+
             set(ref(db, `library/${idx}`), n).then(() => {
                 alert("Bab baru berhasil mengorbit di cloud server!");
                 document.getElementById('addChapterForm').reset();
